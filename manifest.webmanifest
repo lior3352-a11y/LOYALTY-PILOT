@@ -1,0 +1,13 @@
+{
+  "name":"LOYALTY - ארנק נאמנות",
+  "short_name":"LOYALTY",
+  "description":"ארנק נאמנות חכם לעסקים, קניות ושירותים",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#eef2f6",
+  "theme_color":"#0e1b2b",
+  "lang":"he",
+  "dir":"rtl",
+  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
