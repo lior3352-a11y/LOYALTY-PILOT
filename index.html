@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e1b2b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LOYALTY">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>LOYALTY</title>
+<style>
+:root{--navy:#0e1b2b;--navy2:#203a5a;--gold:#d7a23a;--bg:#eef2f6;--text:#14213d;--muted:#667085;--green:#14845a;--line:#e2e7ee}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}.app{max-width:480px;margin:auto;min-height:100vh;background:#f7f9fc;padding-bottom:86px}.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:white;padding:22px 18px 24px;border-radius:0 0 26px 26px}.brand{font-size:25px;font-weight:900;letter-spacing:.5px}.hello{margin-top:12px;color:#dbe6f2}.balance{font-size:42px;font-weight:900;margin-top:8px}.small{font-size:13px;color:var(--muted)}.top .small{color:#cbd6e2}.content{padding:16px}.card{background:white;border-radius:20px;padding:17px;margin-bottom:14px;box-shadow:0 7px 22px rgba(0,0,0,.06)}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.business{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:15px;background:var(--navy);color:white;display:grid;place-items:center;font-weight:900}.amount{font-size:21px;font-weight:900}.btn{width:100%;border:0;border-radius:14px;padding:14px;font-size:16px;font-weight:900;background:var(--gold);color:#111827;cursor:pointer}.btn.secondary{background:#edf1f5;color:var(--navy)}.btn.green{background:var(--green);color:#fff}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.action{background:white;border:1px solid var(--line);border-radius:18px;padding:17px;text-align:center;font-weight:800}.action .ico{font-size:28px;display:block;margin-bottom:8px}.screen{display:none}.screen.active{display:block}.qr{width:230px;height:230px;margin:14px auto;background:white;border:12px solid white;border-radius:18px;display:grid;grid-template-columns:repeat(15,1fr);gap:2px;box-shadow:0 6px 20px rgba(0,0,0,.08)}.qr i{background:#101010}.qr i.off{background:#fff}.success{background:#eaf8f1;border:1px solid #bce6d2;color:#086b42;padding:14px;border-radius:14px;margin-top:12px;text-align:center;font-weight:800}.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-top:1px solid var(--line);padding:8px 5px calc(8px + env(safe-area-inset-bottom));z-index:10}.nav button{border:0;background:none;padding:8px 2px;color:#667085;font-weight:700}.nav button.active{color:var(--navy)}.nav span{display:block;font-size:21px;margin-bottom:3px}.offer{background:linear-gradient(135deg,#fff8e8,#fff);border:1px solid #f0d89d}.history{padding:12px 0;border-bottom:1px solid var(--line)}.history:last-child{border:0}.install{display:none;margin-top:12px;background:#fff;color:var(--navy);border:1px solid rgba(255,255,255,.4)}
+</style>
+</head>
+<body>
+<div class="app">
+<section id="home" class="screen active">
+  <div class="top"><div class="brand">LOYALTY</div><div class="hello">שלום ליאור 👋</div><div class="small">סה״כ יתרות בארנק</div><div class="balance" id="total">₪42.50</div><button id="installBtn" class="btn install">התקן את LOYALTY בטלפון</button></div>
+  <div class="content">
+    <div class="card offer"><b>🎁 הטבה בשבילך</b><p>12% צבירה בביקור הבא בקפה העיר</p><button class="btn" onclick="show('scan')">לסריקה בקופה</button></div>
+    <h3>העסקים שלי</h3>
+    <div class="card"><div class="row"><div class="business"><div class="logo">ק</div><div><b>קפה העיר</b><div class="small">חבר מועדון</div></div></div><div class="amount">₪28.50</div></div></div>
+    <div class="card"><div class="row"><div class="business"><div class="logo">פ</div><div><b>פיצה השכונה</b><div class="small">חבר מועדון</div></div></div><div class="amount">₪14.00</div></div></div>
+    <div class="actions"><div class="action" onclick="show('scan')"><span class="ico">▣</span>סריקת עסקה</div><div class="action" onclick="show('join')"><span class="ico">＋</span>הצטרפות לעסק</div></div>
+  </div>
+</section>
+<section id="scan" class="screen">
+  <div class="top"><div class="brand">סריקת עסקה</div><div class="hello">סורקים את ה-QR החד־פעמי שמציג העסק</div></div>
+  <div class="content"><div class="card" style="text-align:center"><div class="qr" id="scanQr"></div><p class="small">בדמו: לחץ כדי לדמות סריקה של עסקה בסך ₪200</p><button class="btn green" onclick="earn()">דמה סריקה</button><div id="earnMsg"></div></div></div>
+</section>
+<section id="join" class="screen">
+  <div class="top"><div class="brand">הצטרפות לעסק</div><div class="hello">סורקים את ה־QR הקבוע שעל חלון העסק</div></div>
+  <div class="content"><div class="card" style="text-align:center"><div class="qr" id="joinQr"></div><h3>קפה העיר</h3><p>הצטרפות למועדון הנאמנות</p><button class="btn" onclick="joinBusiness()">הצטרף לעסק</button><div id="joinMsg"></div></div></div>
+</section>
+<section id="wallet" class="screen">
+  <div class="top"><div class="brand">הארנק שלי</div><div class="hello">כל הצבירות והמימושים במקום אחד</div></div>
+  <div class="content"><div class="card"><h3>פעולות אחרונות</h3><div class="history row"><span>קפה העיר<br><span class="small">צבירה</span></span><b style="color:#14845a">+₪10</b></div><div class="history row"><span>פיצה השכונה<br><span class="small">מימוש</span></span><b>-₪6</b></div><div class="history row"><span>קפה העיר<br><span class="small">צבירה</span></span><b style="color:#14845a">+₪8.50</b></div></div></div>
+</section>
+<div class="nav"><button class="active" onclick="nav('home',this)"><span>⌂</span>בית</button><button onclick="nav('scan',this)"><span>▣</span>סריקה</button><button onclick="nav('wallet',this)"><span>◫</span>ארנק</button><button onclick="nav('join',this)"><span>＋</span>הצטרפות</button></div>
+</div>
+<script>
+let bal=42.5;function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}function nav(id,b){show(id);document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active')}function makeQR(id,seed){let el=document.getElementById(id);let n=225,s='';for(let i=0;i<n;i++){let on=((i*17+seed*13+i*i)%11)<6;s+='<i class="'+(on?'':'off')+'"></i>'}el.innerHTML=s}function earn(){bal+=10;document.getElementById('total').textContent='₪'+bal.toFixed(2);document.getElementById('earnMsg').innerHTML='<div class="success">העסקה אושרה ✓<br>צברת ₪10 בקפה העיר</div>'}function joinBusiness(){document.getElementById('joinMsg').innerHTML='<div class="success">הצטרפת בהצלחה לקפה העיר ✓</div>'}makeQR('scanQr',7);makeQR('joinQr',4);
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}let deferredPrompt;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBtn').style.display='block'});document.getElementById('installBtn').addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null}});
+</script>
+</body></html>
