@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0e1b2b"><title>LOYALTY קופה</title>
 <style>
-:root{--navy:#0e1b2b;--navy2:#203a5a;--gold:#d7a23a;--bg:#eef2f6;--text:#14213d;--muted:#667085;--green:#14845a;--line:#e2e7ee}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.app{max-width:720px;margin:auto;min-height:100vh;background:#f7f9fc}.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:26px 24px;border-radius:0 0 26px 26px}.brand{font-size:28px;font-weight:900}.hello{margin-top:10px;color:#dbe6f2}.content{padding:20px}.card{background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 7px 22px rgba(0,0,0,.06)}label{display:block;font-weight:800;margin:12px 0 6px}input{width:100%;padding:14px;border:1px solid #cfd7e3;border-radius:12px;font-size:18px;background:#fff}.readonly{background:#f7f9fc;padding:14px;border-radius:12px;margin-top:6px;font-weight:800}.btn{width:100%;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:900;background:var(--navy);color:#fff;cursor:pointer;margin-top:14px}.btn.redeem{background:#d7a23a;color:#0e1b2b}.btn.secondary{background:#fff;color:var(--navy);border:1px solid #cfd7e3}.btn:disabled{opacity:.6}.status{padding:12px 14px;border-radius:13px;margin-top:12px}.ok{background:#eaf8f1;color:#086b42;border:1px solid #bce6d2}.warn{background:#fff6e5;color:#7a4b00;border:1px solid #f1d08a}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{background:#f7f9fc;border-radius:15px;padding:16px}.metric b{display:block;font-size:28px;margin-top:4px}.small{font-size:13px;color:var(--muted)}.hidden{display:none}
+:root{--navy:#0e1b2b;--navy2:#203a5a;--gold:#d7a23a;--bg:#eef2f6;--text:#14213d;--muted:#667085;--green:#14845a;--line:#e2e7ee}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.app{max-width:720px;margin:auto;min-height:100vh;background:#f7f9fc}.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:26px 24px;border-radius:0 0 26px 26px}.brand{font-size:28px;font-weight:900}.hello{margin-top:10px;color:#dbe6f2}.content{padding:20px}.card{background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 7px 22px rgba(0,0,0,.06)}label{display:block;font-weight:800;margin:12px 0 6px}input{width:100%;padding:14px;border:1px solid #cfd7e3;border-radius:12px;font-size:18px;background:#fff}.readonly{background:#f7f9fc;padding:14px;border-radius:12px;margin-top:6px;font-weight:800}.btn{width:100%;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:900;background:var(--navy);color:#fff;cursor:pointer;margin-top:14px}.btn.redeem{background:#d7a23a;color:#0e1b2b}.btn.secondary{background:#fff;color:var(--navy);border:1px solid #cfd7e3}.btn:disabled{opacity:.6}.status{padding:12px 14px;border-radius:13px;margin-top:12px}.ok{background:#eaf8f1;color:#086b42;border:1px solid #bce6d2}.warn{background:#fff6e5;color:#7a4b00;border:1px solid #f1d08a}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{background:#f7f9fc;border-radius:15px;padding:16px}.metric b{display:block;font-size:28px;margin-top:4px}.small{font-size:13px;color:var(--muted)}.hidden{display:none}.history{display:flex;flex-direction:column;gap:10px;margin-top:12px}.history-row{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:#fbfcfe}.history-top{display:flex;justify-content:space-between;gap:12px;font-weight:800}.earn{color:#08734b}.redeem-txt{color:#9a6300}.history-meta{margin-top:5px;font-size:13px;color:var(--muted)}
 </style></head>
 <body><div class="app"><div class="top"><div class="brand">LOYALTY — קופה</div><div class="hello">קפה העיר · טאבלט העסק</div></div><div class="content">
 <div id="loginCard" class="card"><h2 style="margin-top:0">כניסת בעל עסק</h2><label>אימייל</label><input id="email" type="email" autocomplete="username"><label>סיסמה</label><input id="password" type="password" autocomplete="current-password"><button id="loginBtn" class="btn" onclick="login()">כניסה</button><div id="loginResult"></div></div>
@@ -12,6 +12,7 @@
 <div class="card"><h2 style="margin-top:0">עסקה חדשה</h2><label>טלפון לקוח</label><input id="phone" inputmode="tel"><label>סכום קנייה</label><input id="purchase" type="number" min="1" value="100"><label>אחוז צבירה</label><div class="readonly">12% — נקבע אוטומטית לפי העסק</div><button id="btn" class="btn" onclick="submitTx()">אשר עסקה</button><div id="result"></div></div>
 <div class="card"><h2 style="margin-top:0">מימוש נקודות</h2><label>טלפון לקוח</label><input id="redeemPhone" inputmode="tel" placeholder="לדוגמה 0549879978"><label>סכום למימוש</label><input id="redeemAmount" type="number" min="0.01" step="0.01" value="20"><button id="redeemBtn" class="btn redeem" onclick="redeemPoints()">ממש נקודות</button><div id="redeemResult"></div></div>
 <div class="card"><div class="metrics"><div class="metric"><span class="small">יתרת הלקוח הנוכחי</span><b id="balance">₪--</b></div><div class="metric"><span class="small">מצב</span><b>LIVE</b></div></div></div>
+<div class="card"><h2 style="margin-top:0">היסטוריית עסקאות</h2><button class="btn secondary" onclick="loadHistory()">רענן היסטוריה</button><div id="historyStatus"></div><div id="history" class="history"></div></div>
 <div class="card"><div class="small">אחוז הצבירה מחושב ב‑Supabase לפי העסק. היתרה שמוצגת היא של הטלפון שבעסקה או במימוש האחרונים.</div></div>
 </div>
 </div></div>
@@ -22,7 +23,7 @@ const TOKEN_KEY='loyalty_merchant_access_token';
 const USER_KEY='loyalty_merchant_email';
 function accessToken(){return localStorage.getItem(TOKEN_KEY)||''}
 function authHeaders(){return {apikey:K,Authorization:'Bearer '+accessToken(),'Content-Type':'application/json'}}
-function showMerchant(email){document.getElementById('loginCard').classList.add('hidden');document.getElementById('merchantArea').classList.remove('hidden');document.getElementById('sessionUser').textContent='מחובר: '+(email||localStorage.getItem(USER_KEY)||'בעל העסק')}
+function showMerchant(email){document.getElementById('loginCard').classList.add('hidden');document.getElementById('merchantArea').classList.remove('hidden');document.getElementById('sessionUser').textContent='מחובר: '+(email||localStorage.getItem(USER_KEY)||'בעל העסק');loadHistory()}
 function showLogin(){document.getElementById('merchantArea').classList.add('hidden');document.getElementById('loginCard').classList.remove('hidden')}
 async function login(){
  const btn=document.getElementById('loginBtn'),out=document.getElementById('loginResult');
@@ -40,7 +41,7 @@ async function login(){
 function logout(){localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(USER_KEY);showLogin()}
 async function rpc(name,payload){
  if(!accessToken())throw new Error('יש להתחבר תחילה');
- const r=await fetch(U+'/rest/v1/rpc/'+name,{method:'POST',headers:authHeaders(),body:JSON.stringify(payload)});
+ const r=await fetch(U+'/rest/v1/rpc/'+name,{method:'POST',headers:authHeaders(),body:JSON.stringify(payload||{})});
  if(r.status===401){logout();throw new Error('החיבור פג. יש להתחבר מחדש.')}
  if(!r.ok)throw new Error(await r.text());const t=await r.text();return t?JSON.parse(t):null
 }
@@ -53,9 +54,8 @@ async function submitTx(){
  try{
   const data=await rpc('create_loyalty_transaction_secure',{p_phone:phone,p_business_id:1,p_purchase_amount:purchase});
   const earned=Number(data?.earned_amount||0);const balance=Number(data?.balance||0);const txId=data?.transaction_id??'';
-  document.getElementById('balance').textContent='₪'+balance.toFixed(2);
-  document.getElementById('redeemPhone').value=phone;
-  out.innerHTML='<div class="status ok"><b>העסקה אושרה ✓</b><br>קנייה ₪'+purchase.toFixed(2)+' · צבירה ₪'+earned.toFixed(2)+'<br>יתרה חדשה ₪'+balance.toFixed(2)+'<br><span class="small">מספר עסקה '+txId+'</span></div>';
+  document.getElementById('balance').textContent='₪'+balance.toFixed(2);document.getElementById('redeemPhone').value=phone;
+  out.innerHTML='<div class="status ok"><b>העסקה אושרה ✓</b><br>קנייה ₪'+purchase.toFixed(2)+' · צבירה ₪'+earned.toFixed(2)+'<br>יתרה חדשה ₪'+balance.toFixed(2)+'<br><span class="small">מספר עסקה '+txId+'</span></div>';loadHistory();
  }catch(e){out.innerHTML='<div class="status warn"><b>העסקה לא נשמרה.</b><br>'+e.message+'</div>'}
  finally{btn.disabled=false;btn.textContent='אשר עסקה'}
 }
@@ -68,11 +68,20 @@ async function redeemPoints(){
  try{
   const data=await rpc('redeem_loyalty_balance_secure',{p_phone:phone,p_redeem_amount:amount});
   const redeemed=Number(data?.redeemed_amount||amount);const balance=Number(data?.balance||0);const txId=data?.transaction_id??'';
-  document.getElementById('balance').textContent='₪'+balance.toFixed(2);
-  document.getElementById('phone').value=phone;
-  out.innerHTML='<div class="status ok"><b>המימוש אושר ✓</b><br>מומשו ₪'+redeemed.toFixed(2)+'<br>יתרה חדשה ₪'+balance.toFixed(2)+'<br><span class="small">מספר עסקה '+txId+'</span></div>';
+  document.getElementById('balance').textContent='₪'+balance.toFixed(2);document.getElementById('phone').value=phone;
+  out.innerHTML='<div class="status ok"><b>המימוש אושר ✓</b><br>מומשו ₪'+redeemed.toFixed(2)+'<br>יתרה חדשה ₪'+balance.toFixed(2)+'<br><span class="small">מספר עסקה '+txId+'</span></div>';loadHistory();
  }catch(e){out.innerHTML='<div class="status warn"><b>המימוש לא בוצע.</b><br>'+e.message+'</div>'}
  finally{btn.disabled=false;btn.textContent='ממש נקודות'}
+}
+async function loadHistory(){
+ const status=document.getElementById('historyStatus'),box=document.getElementById('history');
+ status.innerHTML='<div class="status warn">טוען היסטוריה…</div>';box.innerHTML='';
+ try{
+  const rows=await rpc('get_loyalty_history_secure',{p_limit:20});
+  status.innerHTML='';
+  if(!Array.isArray(rows)||rows.length===0){box.innerHTML='<div class="small">אין עדיין עסקאות להצגה.</div>';return}
+  box.innerHTML=rows.map(r=>{const isRedeem=r.type==='redeem';const amount=Number(r.earned_amount||0).toFixed(2);const purchase=Number(r.purchase_amount||0).toFixed(2);const d=new Date(r.created_at);const dt=isNaN(d)?String(r.created_at||''):d.toLocaleString('he-IL');return '<div class="history-row"><div class="history-top"><span class="'+(isRedeem?'redeem-txt':'earn')+'">'+(isRedeem?'מימוש':'צבירה')+'</span><span>₪'+amount+'</span></div><div class="history-meta">'+(isRedeem?'מימוש נקודות':'קנייה ₪'+purchase)+' · '+dt+' · עסקה '+r.id+'</div></div>'}).join('');
+ }catch(e){status.innerHTML='<div class="status warn"><b>לא ניתן לטעון היסטוריה.</b><br>'+e.message+'</div>'}
 }
 if(accessToken())showMerchant(localStorage.getItem(USER_KEY));else showLogin();
 </script></body></html>
