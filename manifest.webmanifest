@@ -1,13 +1,16 @@
 {
-  "name":"LOYALTY - ארנק נאמנות",
+  "name":"LOYALTY - הארנק האישי שלי",
   "short_name":"LOYALTY",
-  "description":"ארנק נאמנות חכם לעסקים, קניות ושירותים",
-  "start_url":"./",
+  "description":"ארנק הנאמנות האישי של LOYALTY",
+  "start_url":"./customer.html?source=pwa",
   "scope":"./",
   "display":"standalone",
-  "background_color":"#eef2f6",
-  "theme_color":"#0e1b2b",
+  "orientation":"portrait",
+  "background_color":"#f7f8fb",
+  "theme_color":"#ffffff",
   "lang":"he",
   "dir":"rtl",
-  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+  "icons":[
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
 }
