@@ -1,16 +1,20 @@
 {
+  "id":"./customer.html",
   "name":"LOYALTY - הארנק האישי שלי",
   "short_name":"LOYALTY",
   "description":"ארנק הנאמנות האישי של LOYALTY",
   "start_url":"./customer.html?source=pwa",
   "scope":"./",
   "display":"standalone",
+  "display_override":["standalone","minimal-ui"],
   "orientation":"portrait",
-  "background_color":"#f7f8fb",
-  "theme_color":"#ffffff",
+  "background_color":"#ffffff",
+  "theme_color":"#171b24",
   "lang":"he",
   "dir":"rtl",
   "icons":[
-    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+    {"src":"icon-192.svg","sizes":"192x192","type":"image/svg+xml","purpose":"any"},
+    {"src":"icon-512.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any"},
+    {"src":"icon-512.svg","sizes":"512x512","type":"image/svg+xml","purpose":"maskable"}
   ]
 }
