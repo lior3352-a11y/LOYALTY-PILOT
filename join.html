@@ -28,10 +28,13 @@ async function registerCustomer(){
  if(!name||!phone){msg.className='msg bad';msg.textContent='יש להזין שם וטלפון.';return;}
  btn.disabled=true;btn.textContent='נרשם…';
  try{
-  const r=await fetch(U+'/rest/v1/rpc/register_customer',{method:'POST',headers:{apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'},body:JSON.stringify({p_name:name,p_phone:phone})});
+  const r=await fetch(U+'/rest/v1/rpc/register_customer_v2',{method:'POST',headers:{apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'},body:JSON.stringify({p_name:name,p_phone:phone})});
   if(!r.ok)throw new Error(await r.text());
-  const id=await r.json();
-  msg.className='msg ok';msg.innerHTML='<b>נרשמת בהצלחה ✓</b><br>מספר לקוח: '+id;
+  const data=await r.json();
+  const token=data&&data.token?data.token:null;
+  if(!token)throw new Error('לא התקבל מפתח ארנק');
+  msg.className='msg ok';msg.innerHTML='<b>נרשמת בהצלחה ✓</b><br>מעביר לארנק האישי שלך…';
+  setTimeout(()=>{location.href='customer.html?token='+encodeURIComponent(token)+'&v=2';},700);
  }catch(e){msg.className='msg bad';msg.textContent='הרישום לא הצליח: '+e.message;}
  finally{btn.disabled=false;btn.textContent='הצטרף למועדון';}
 }
