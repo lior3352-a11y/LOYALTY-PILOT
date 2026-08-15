@@ -1,49 +1,5 @@
 <!doctype html>
-<html lang="he" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7f8fb">
-<title>הצטרפות ל-LOYALTY</title>
-<style>
-:root{--navy:#10233f;--gold:#d9aa45;--gold2:#f2d783;--bg:#f6f7fa;--card:#ffffff;--text:#14213d;--muted:#758096;--line:#e5e8ee;--green:#0b7a53}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(180deg,#ffffff 0,#f6f7fa 45%,#eef1f5 100%);color:var(--text);min-height:100vh}.app{max-width:480px;margin:auto;min-height:100vh;padding:22px 16px 30px}.hero{text-align:center;padding:24px 16px 18px}.brand-mark{width:70px;height:70px;border-radius:24px;margin:auto;background:#fff8e6;border:1px solid #ead79d;display:grid;place-items:center;font-size:34px;color:#a67b1c;box-shadow:0 10px 30px rgba(20,33,61,.07)}.brand{font-size:34px;font-weight:900;letter-spacing:1.5px;margin-top:12px;color:var(--navy)}.tag{margin-top:6px;color:var(--muted);font-size:14px}.card{background:var(--card);border-radius:26px;padding:24px 20px;box-shadow:0 14px 38px rgba(20,33,61,.08);border:1px solid var(--line)}.title{text-align:center;font-size:27px;font-weight:900;margin:0}.business{text-align:center;margin:9px 0 18px;color:#7d6732;font-weight:800}.perk{display:flex;justify-content:center;gap:8px;align-items:center;background:#fffaf0;border:1px solid #ead9a6;border-radius:16px;padding:12px;margin-bottom:20px;font-weight:800;color:#6f5a20}.perk b{font-size:22px;color:#9b741d}label{display:block;font-weight:800;margin:14px 3px 7px}input{width:100%;padding:15px 16px;border:1px solid #d7dce5;border-radius:15px;font-size:18px;background:#fafbfc;outline:none;transition:.2s}input:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(217,170,69,.14);background:#fff}button{width:100%;margin-top:20px;padding:16px;border:0;border-radius:16px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#17253a;font-weight:900;font-size:18px;box-shadow:0 9px 22px rgba(217,170,69,.22)}button:disabled{opacity:.65}.msg{margin-top:14px;padding:13px;border-radius:13px;font-size:14px}.ok{background:#eaf8f1;color:#086b42;border:1px solid #bce6d2}.bad{background:#fff2e5;color:#8a4b00;border:1px solid #efd1a4}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px}.step{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 8px;text-align:center;box-shadow:0 5px 16px rgba(20,33,61,.04);font-size:12px;color:#657083}.step strong{display:block;color:#a67b1c;font-size:20px;margin-bottom:5px}.footer{text-align:center;color:#8a919d;font-size:12px;margin-top:17px;padding:0 12px}
-</style>
-</head>
-<body>
-<div class="app">
-  <div class="hero"><div class="brand-mark">★</div><div class="brand">LOYALTY</div><div class="tag">המועדון האישי שלך</div></div>
-  <div class="card">
-    <h1 class="title">מצטרפים ומתחילים לצבור</h1>
-    <div class="business">קפה העיר</div>
-    <div class="perk">צבירה בכל קנייה <b>12%</b> ★</div>
-    <label>השם שלך</label><input id="name" autocomplete="name" placeholder="לדוגמה: נורמה כהן">
-    <label>מספר טלפון</label><input id="phone" inputmode="tel" autocomplete="tel" placeholder="05X-XXXXXXX">
-    <button id="btn" onclick="registerCustomer()">הצטרפו ל-LOYALTY</button>
-    <div id="msg"></div>
-  </div>
-  <div class="steps"><div class="step"><strong>1</strong>נרשמים</div><div class="step"><strong>2</strong>צוברים</div><div class="step"><strong>3</strong>נהנים</div></div>
-  <div class="footer">ההרשמה מהירה • הארנק נפתח מיד • הנקודות מתעדכנות אוטומטית</div>
-</div>
-<script>
-const U='https://haiewlmvnzpryneaszdd.supabase.co';
-const K='sb_publishable_eJKsXaMr0GCSqa5AVNoe1A_NPsWqXHk';
-async function registerCustomer(){
- const name=document.getElementById('name').value.trim();
- const phone=document.getElementById('phone').value.trim();
- const btn=document.getElementById('btn');
- const msg=document.getElementById('msg');
- if(!name||!phone){msg.className='msg bad';msg.textContent='יש להזין שם וטלפון.';return;}
- btn.disabled=true;btn.textContent='מצרפים אותך…';
- try{
-  const r=await fetch(U+'/rest/v1/rpc/register_customer_v2',{method:'POST',headers:{apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'},body:JSON.stringify({p_name:name,p_phone:phone})});
-  if(!r.ok)throw new Error(await r.text());
-  const data=await r.json();
-  const token=data&&data.token?data.token:null;
-  if(!token)throw new Error('לא התקבל מפתח ארנק');
-  msg.className='msg ok';msg.innerHTML='<b>ברוכים הבאים ל-LOYALTY ✓</b><br>פותחים את הארנק האישי שלך…';
-  setTimeout(()=>{location.href='customer.html?token='+encodeURIComponent(token)+'&v=4';},700);
- }catch(e){msg.className='msg bad';msg.textContent='הרישום לא הצליח: '+e.message;}
- finally{btn.disabled=false;btn.textContent='הצטרפו ל-LOYALTY';}
-}
-</script>
-</body></html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff"><title>הצטרפות ל-LOYALTY</title><style>
+:root{--ink:#172033;--muted:#7b8494;--gold:#c89a3d;--gold2:#f6e6b7;--bg:#f7f8fb;--line:#e7e9ee;--green:#0b7a53}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(180deg,#fff 0,#f7f8fb 70%);color:var(--ink)}.app{max-width:480px;margin:auto;min-height:100vh;padding:26px 18px 34px}.brand{text-align:center;font-size:30px;font-weight:900;letter-spacing:2px}.dot{color:var(--gold)}.subtitle{text-align:center;color:var(--muted);font-size:14px;margin-top:5px}.hero{margin:26px 0 18px;text-align:center}.hero h1{font-size:31px;line-height:1.15;margin:0 0 10px}.hero p{margin:0;color:var(--muted);font-size:16px}.reward{margin:20px 0;background:linear-gradient(135deg,#fffaf0,#fff);border:1px solid #ead8a7;border-radius:20px;padding:16px;display:flex;align-items:center;justify-content:space-between}.reward strong{font-size:28px;color:#9a741d}.reward span{font-weight:800}.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 14px 35px rgba(23,32,51,.07)}label{display:block;font-weight:800;margin:14px 2px 7px}input{width:100%;padding:15px 16px;border:1px solid #d9dde5;border-radius:15px;font-size:18px;background:#fbfcfd;outline:none}input:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(200,154,61,.12);background:white}button{width:100%;margin-top:20px;padding:16px;border:0;border-radius:16px;background:#172033;color:#fff;font-weight:900;font-size:18px;box-shadow:0 10px 24px rgba(23,32,51,.16)}button:disabled{opacity:.6}.note{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}.msg{margin-top:14px;padding:13px;border-radius:13px;font-size:14px}.ok{background:#eaf8f1;color:#086b42;border:1px solid #bce6d2}.bad{background:#fff2e5;color:#8a4b00;border:1px solid #efd1a4}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.step{background:#fff;border:1px solid var(--line);border-radius:15px;padding:11px 6px;text-align:center;font-size:12px;color:var(--muted)}.step b{display:block;color:var(--gold);font-size:18px;margin-bottom:3px}</style></head><body><div class="app"><div class="brand">LOYALTY<span class="dot">.</span></div><div class="subtitle">המועדון האישי שלך</div><div class="hero"><h1>מצטרפים. צוברים. חוזרים.</h1><p>הרשמה קצרה וארנק אישי שנפתח מיד בטלפון.</p></div><div class="reward"><span>קפה העיר<br><small style="color:#7b8494">צבירה בכל קנייה</small></span><strong>12%</strong></div><div class="card"><label>השם שלך</label><input id="name" autocomplete="name" placeholder="שם מלא"><label>מספר טלפון</label><input id="phone" inputmode="tel" autocomplete="tel" placeholder="05X-XXXXXXX"><button id="btn" onclick="registerCustomer()">הצטרפו עכשיו</button><div id="msg"></div><div class="note">בלי כרטיס. בלי סיסמה. בלי הורדה מחנות אפליקציות.</div></div><div class="steps"><div class="step"><b>1</b>נרשמים</div><div class="step"><b>2</b>צוברים</div><div class="step"><b>3</b>מממשים</div></div></div><script>
+const U='https://haiewlmvnzpryneaszdd.supabase.co';const K='sb_publishable_eJKsXaMr0GCSqa5AVNoe1A_NPsWqXHk';async function registerCustomer(){const name=document.getElementById('name').value.trim(),phone=document.getElementById('phone').value.trim(),btn=document.getElementById('btn'),msg=document.getElementById('msg');if(!name||!phone){msg.className='msg bad';msg.textContent='יש להזין שם וטלפון.';return}btn.disabled=true;btn.textContent='מצרפים אותך…';try{const r=await fetch(U+'/rest/v1/rpc/register_customer_v2',{method:'POST',headers:{apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'},body:JSON.stringify({p_name:name,p_phone:phone})});if(!r.ok)throw new Error(await r.text());const data=await r.json(),token=data&&data.token?data.token:null;if(!token)throw new Error('לא התקבל מפתח ארנק');msg.className='msg ok';msg.innerHTML='<b>נרשמת בהצלחה ✓</b><br>פותחים את הארנק האישי שלך…';setTimeout(()=>location.href='customer.html?token='+encodeURIComponent(token)+'&v=5',650)}catch(e){msg.className='msg bad';msg.textContent='הרישום לא הצליח: '+e.message}finally{btn.disabled=false;btn.textContent='הצטרפו עכשיו'}}
+</script></body></html>
