@@ -3,16 +3,46 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0e1b2b"><title>LOYALTY קופה</title>
 <style>
-:root{--navy:#0e1b2b;--navy2:#203a5a;--gold:#d7a23a;--bg:#eef2f6;--text:#14213d;--muted:#667085;--green:#14845a;--line:#e2e7ee}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.app{max-width:720px;margin:auto;min-height:100vh;background:#f7f9fc}.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:26px 24px;border-radius:0 0 26px 26px}.brand{font-size:28px;font-weight:900}.hello{margin-top:10px;color:#dbe6f2}.content{padding:20px}.card{background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 7px 22px rgba(0,0,0,.06)}label{display:block;font-weight:800;margin:12px 0 6px}input{width:100%;padding:14px;border:1px solid #cfd7e3;border-radius:12px;font-size:18px;background:#fff}.readonly{background:#f7f9fc;padding:14px;border-radius:12px;margin-top:6px;font-weight:800}.btn{width:100%;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:900;background:var(--navy);color:#fff;cursor:pointer;margin-top:14px}.btn:disabled{opacity:.6}.status{padding:12px 14px;border-radius:13px;margin-top:12px}.ok{background:#eaf8f1;color:#086b42;border:1px solid #bce6d2}.warn{background:#fff6e5;color:#7a4b00;border:1px solid #f1d08a}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{background:#f7f9fc;border-radius:15px;padding:16px}.metric b{display:block;font-size:28px;margin-top:4px}.small{font-size:13px;color:var(--muted)}
+:root{--navy:#0e1b2b;--navy2:#203a5a;--gold:#d7a23a;--bg:#eef2f6;--text:#14213d;--muted:#667085;--green:#14845a;--line:#e2e7ee}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.app{max-width:720px;margin:auto;min-height:100vh;background:#f7f9fc}.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:26px 24px;border-radius:0 0 26px 26px}.brand{font-size:28px;font-weight:900}.hello{margin-top:10px;color:#dbe6f2}.content{padding:20px}.card{background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 7px 22px rgba(0,0,0,.06)}label{display:block;font-weight:800;margin:12px 0 6px}input{width:100%;padding:14px;border:1px solid #cfd7e3;border-radius:12px;font-size:18px;background:#fff}.readonly{background:#f7f9fc;padding:14px;border-radius:12px;margin-top:6px;font-weight:800}.btn{width:100%;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:900;background:var(--navy);color:#fff;cursor:pointer;margin-top:14px}.btn.secondary{background:#fff;color:var(--navy);border:1px solid #cfd7e3}.btn:disabled{opacity:.6}.status{padding:12px 14px;border-radius:13px;margin-top:12px}.ok{background:#eaf8f1;color:#086b42;border:1px solid #bce6d2}.warn{background:#fff6e5;color:#7a4b00;border:1px solid #f1d08a}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{background:#f7f9fc;border-radius:15px;padding:16px}.metric b{display:block;font-size:28px;margin-top:4px}.small{font-size:13px;color:var(--muted)}.hidden{display:none}
 </style></head>
 <body><div class="app"><div class="top"><div class="brand">LOYALTY — קופה</div><div class="hello">קפה העיר · טאבלט העסק</div></div><div class="content">
+<div id="loginCard" class="card"><h2 style="margin-top:0">כניסת בעל עסק</h2><label>אימייל</label><input id="email" type="email" autocomplete="username"><label>סיסמה</label><input id="password" type="password" autocomplete="current-password"><button id="loginBtn" class="btn" onclick="login()">כניסה</button><div id="loginResult"></div></div>
+<div id="merchantArea" class="hidden">
+<div class="card"><div class="small" id="sessionUser"></div><button class="btn secondary" onclick="logout()">התנתקות</button></div>
 <div class="card"><h2 style="margin-top:0">עסקה חדשה</h2><label>טלפון לקוח</label><input id="phone" inputmode="tel"><label>סכום קנייה</label><input id="purchase" type="number" min="1" value="100"><label>אחוז צבירה</label><div class="readonly">12% — נקבע אוטומטית לפי העסק</div><button id="btn" class="btn" onclick="submitTx()">אשר עסקה</button><div id="result"></div></div>
 <div class="card"><div class="metrics"><div class="metric"><span class="small">יתרת הלקוח הנוכחי</span><b id="balance">₪--</b></div><div class="metric"><span class="small">מצב</span><b>LIVE</b></div></div></div>
 <div class="card"><div class="small">אחוז הצבירה מחושב ב‑Supabase לפי העסק. היתרה שמוצגת היא של הטלפון שהוזן בעסקה האחרונה.</div></div>
+</div>
 </div></div>
 <script>
-const U='https://haiewlmvnzpryneaszdd.supabase.co';const K='sb_publishable_eJKsXaMr0GCSqa5AVNoe1A_NPsWqXHk';const H={apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'};
-async function rpc(name,payload){const r=await fetch(U+'/rest/v1/rpc/'+name,{method:'POST',headers:H,body:JSON.stringify(payload)});if(!r.ok)throw new Error(await r.text());const t=await r.text();return t?JSON.parse(t):null}
+const U='https://haiewlmvnzpryneaszdd.supabase.co';
+const K='sb_publishable_eJKsXaMr0GCSqa5AVNoe1A_NPsWqXHk';
+const TOKEN_KEY='loyalty_merchant_access_token';
+const USER_KEY='loyalty_merchant_email';
+function accessToken(){return localStorage.getItem(TOKEN_KEY)||''}
+function authHeaders(){return {apikey:K,Authorization:'Bearer '+accessToken(),'Content-Type':'application/json'}}
+function showMerchant(email){document.getElementById('loginCard').classList.add('hidden');document.getElementById('merchantArea').classList.remove('hidden');document.getElementById('sessionUser').textContent='מחובר: '+(email||localStorage.getItem(USER_KEY)||'בעל העסק')}
+function showLogin(){document.getElementById('merchantArea').classList.add('hidden');document.getElementById('loginCard').classList.remove('hidden')}
+async function login(){
+ const btn=document.getElementById('loginBtn'),out=document.getElementById('loginResult');
+ const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;
+ if(!email||!password){out.innerHTML='<div class="status warn">יש להזין אימייל וסיסמה.</div>';return}
+ btn.disabled=true;btn.textContent='מתחבר…';out.innerHTML='';
+ try{
+  const r=await fetch(U+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:K,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+  const data=await r.json();
+  if(!r.ok||!data.access_token)throw new Error(data?.msg||data?.message||'הכניסה נכשלה');
+  localStorage.setItem(TOKEN_KEY,data.access_token);localStorage.setItem(USER_KEY,email);showMerchant(email);
+ }catch(e){out.innerHTML='<div class="status warn"><b>הכניסה נכשלה.</b><br>'+e.message+'</div>'}
+ finally{btn.disabled=false;btn.textContent='כניסה'}
+}
+function logout(){localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(USER_KEY);showLogin()}
+async function rpc(name,payload){
+ if(!accessToken())throw new Error('יש להתחבר תחילה');
+ const r=await fetch(U+'/rest/v1/rpc/'+name,{method:'POST',headers:authHeaders(),body:JSON.stringify(payload)});
+ if(r.status===401){logout();throw new Error('החיבור פג. יש להתחבר מחדש.')}
+ if(!r.ok)throw new Error(await r.text());const t=await r.text();return t?JSON.parse(t):null
+}
 async function submitTx(){
  const btn=document.getElementById('btn'),out=document.getElementById('result');
  const phone=document.getElementById('phone').value.trim();
@@ -21,12 +51,11 @@ async function submitTx(){
  btn.disabled=true;btn.textContent='שומר עסקה…';out.innerHTML='<div class="status warn">שולח ל‑Supabase…</div>';
  try{
   const data=await rpc('create_loyalty_transaction_secure',{p_phone:phone,p_business_id:1,p_purchase_amount:purchase});
-  const earned=Number(data?.earned_amount||0);
-  const balance=Number(data?.balance||0);
-  const txId=data?.transaction_id??'';
+  const earned=Number(data?.earned_amount||0);const balance=Number(data?.balance||0);const txId=data?.transaction_id??'';
   document.getElementById('balance').textContent='₪'+balance.toFixed(2);
   out.innerHTML='<div class="status ok"><b>העסקה אושרה ✓</b><br>קנייה ₪'+purchase.toFixed(2)+' · צבירה ₪'+earned.toFixed(2)+'<br>יתרה חדשה ₪'+balance.toFixed(2)+'<br><span class="small">מספר עסקה '+txId+'</span></div>';
  }catch(e){out.innerHTML='<div class="status warn"><b>העסקה לא נשמרה.</b><br>'+e.message+'</div>'}
  finally{btn.disabled=false;btn.textContent='אשר עסקה'}
 }
+if(accessToken())showMerchant(localStorage.getItem(USER_KEY));else showLogin();
 </script></body></html>
