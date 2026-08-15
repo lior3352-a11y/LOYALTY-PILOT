@@ -1,5 +1,5 @@
-const CACHE='loyalty-pilot-v3';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg'];
+const CACHE='loyalty-pilot-v6';
+const ASSETS=['./','./index.html','./join.html','./customer.html','./manifest.webmanifest','./icon.svg'];
 
 self.addEventListener('install',event=>{
   self.skipWaiting();
@@ -20,10 +20,10 @@ self.addEventListener('fetch',event=>{
       fetch(event.request,{cache:'no-store'})
         .then(response=>{
           const copy=response.clone();
-          caches.open(CACHE).then(cache=>cache.put('./index.html',copy));
+          caches.open(CACHE).then(cache=>cache.put(event.request,copy));
           return response;
         })
-        .catch(()=>caches.match('./index.html'))
+        .catch(()=>caches.match(event.request).then(r=>r||caches.match('./customer.html')))
     );
     return;
   }
