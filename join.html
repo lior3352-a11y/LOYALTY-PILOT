@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>הצטרפות ל-LOYALTY</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#eef2f6;color:#14213d}.wrap{max-width:460px;margin:auto;padding:24px}.card{background:#fff;border-radius:20px;padding:22px;box-shadow:0 8px 24px rgba(0,0,0,.08)}h1{margin-top:0}.small{color:#667085;font-size:14px}label{display:block;font-weight:700;margin:14px 0 6px}input{width:100%;box-sizing:border-box;padding:14px;border:1px solid #cfd7e3;border-radius:12px;font-size:17px}button{width:100%;margin-top:16px;padding:14px;border:0;border-radius:12px;background:#0e1b2b;color:#fff;font-weight:800;font-size:17px}.msg{margin-top:14px;padding:12px;border-radius:12px}.ok{background:#eaf8f1;color:#086b42}.bad{background:#fff2e5;color:#8a4b00}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+<h1>הצטרפות למועדון</h1>
+<p class="small">קפה העיר · 12% צבירה</p>
+<label>שם</label><input id="name" autocomplete="name">
+<label>טלפון</label><input id="phone" inputmode="tel" autocomplete="tel">
+<button id="btn" onclick="registerCustomer()">הצטרף למועדון</button>
+<div id="msg"></div>
+</div></div>
+<script>
+const U='https://haiewlmvnzpryneaszdd.supabase.co';
+const K='sb_publishable_eJKsXaMr0GCSqa5AVNoe1A_NPsWqXHk';
+async function registerCustomer(){
+ const name=document.getElementById('name').value.trim();
+ const phone=document.getElementById('phone').value.trim();
+ const btn=document.getElementById('btn');
+ const msg=document.getElementById('msg');
+ if(!name||!phone){msg.className='msg bad';msg.textContent='יש להזין שם וטלפון.';return;}
+ btn.disabled=true;btn.textContent='נרשם…';
+ try{
+  const r=await fetch(U+'/rest/v1/rpc/register_customer',{method:'POST',headers:{apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'},body:JSON.stringify({p_name:name,p_phone:phone})});
+  if(!r.ok)throw new Error(await r.text());
+  const id=await r.json();
+  msg.className='msg ok';msg.innerHTML='<b>נרשמת בהצלחה ✓</b><br>מספר לקוח: '+id;
+ }catch(e){msg.className='msg bad';msg.textContent='הרישום לא הצליח: '+e.message;}
+ finally{btn.disabled=false;btn.textContent='הצטרף למועדון';}
+}
+</script>
+</body></html>
