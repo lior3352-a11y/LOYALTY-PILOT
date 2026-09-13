@@ -33,6 +33,30 @@ async function getBusiness(id) {
   const { rows } = await pool.query('SELECT * FROM businesses WHERE business_id = $1 LIMIT 1', [id]);
   return mapBusiness(rows[0]);
 }
+
+async function getDashboardData(id) {
+  const business = await getBusiness(id);
+  if (!business) return null;
+  const [customers, points, transactions, reward, returnRate] = await Promise.all([
+    pool.query('SELECT COUNT(DISTINCT customer_id)::int AS count FROM wallets WHERE business_id = $1', [id]),
+    pool.query('SELECT COALESCE(SUM(points_earned), 0)::int AS total FROM transactions WHERE business_id = $1', [id]),
+    pool.query('SELECT customer_phone, points_earned, created_at FROM transactions WHERE business_id = $1 ORDER BY created_at DESC LIMIT 8', [id]),
+    pool.query('SELECT reward_value FROM rewards WHERE business_id = $1 ORDER BY id LIMIT 1', [id]),
+    pool.query('SELECT COALESCE(ROUND(100.0 * COUNT(*) FILTER (WHERE visits > 1) / NULLIF(COUNT(*), 0)), 0)::int AS percent FROM (SELECT customer_id, COUNT(*) AS visits FROM transactions t JOIN customers c ON c.phone = t.customer_phone WHERE t.business_id = $1 GROUP BY customer_id) visits', [id])
+  ]);
+  return {
+    business,
+    metrics: {
+      customers: customers.rows[0].count,
+      points: points.rows[0].total,
+      transactions: transactions.rows.length,
+      reward: Number(reward.rows[0]?.reward_value ?? business.reward),
+      returnRate: returnRate.rows[0].percent,
+      rewardsClaimed: transactions.rows.length
+    },
+    transactions: transactions.rows.map((row) => ({ phone: row.customer_phone, amount: Number(row.points_earned), createdAt: row.created_at }))
+  };
+}
 async function ensureReward(client, id, points) {
   const existing = await client.query('SELECT id, reward_value FROM rewards WHERE business_id = $1 ORDER BY id LIMIT 1', [id]);
   if (existing.rows[0]) return existing.rows[0];
@@ -91,6 +115,14 @@ app.post('/api/create-checkout-session', async (req, res) => {
 app.get('/api/business/:id', async (req, res) => {
   try { const biz = await getBusiness(req.params.id); if (!biz) return res.status(404).json({ error: 'Business not found' }); res.json(biz); }
   catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/dashboard/:id', async (req, res) => {
+  try {
+    const dashboard = await getDashboardData(req.params.id);
+    if (!dashboard) return res.status(404).json({ error: 'Business not found' });
+    res.json(dashboard);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.get('/api/business-by-session/:sessionId', async (req, res) => {
