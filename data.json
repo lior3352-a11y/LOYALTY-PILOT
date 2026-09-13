@@ -59,6 +59,16 @@
       "reward": 5,
       "createdAt": "2026-09-13T06:04:10.605Z",
       "slug": "neon-reload-check-53ff"
+    },
+    {
+      "id": "biz_24f903f836",
+      "name": "Production Readiness Salon",
+      "category": "Beauty",
+      "email": "qa+production-readiness@example.com",
+      "status": "demo-active",
+      "reward": 5,
+      "createdAt": "2026-09-13T06:22:28.236Z",
+      "slug": "production-readiness-salon-f836"
     }
   ],
   "customers": [
@@ -73,6 +83,17 @@
               "type": "earn",
               "amount": 5,
               "ts": "2026-09-12T10:54:49.609Z"
+            }
+          ]
+        },
+        "biz_24f903f836": {
+          "businessName": "Production Readiness Salon",
+          "balance": 5,
+          "history": [
+            {
+              "type": "earn",
+              "amount": 5,
+              "ts": "2026-09-13T06:22:49.348Z"
             }
           ]
         }
