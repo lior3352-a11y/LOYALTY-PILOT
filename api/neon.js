@@ -20,6 +20,37 @@ export default async function handler(req, res) {
   try {
     const db = sql(); await ensureSchema(db);
     const { action, ...p } = req.body || {};
+    if (action === 'merchant_rpc') {
+      const name = String(p.name || ''), payload = p.payload || {};
+      const business = (await db`SELECT id, name, loyalty_rate, qr_token FROM loyalty_businesses ORDER BY id LIMIT 1`)[0];
+      if (!business) return res.status(404).json({ error: 'Business not found' });
+      if (name.includes('business_profile')) return res.json(business);
+      if (name.includes('business_dashboard')) {
+        const row = (await db`SELECT COALESCE(SUM(purchase_amount),0) AS sales, COALESCE(SUM(earned_amount),0) AS earned, COUNT(*)::int AS transactions, COUNT(DISTINCT customer_id)::int AS customers FROM loyalty_transactions WHERE business_id=${business.id} AND created_at >= CURRENT_DATE`)[0];
+        const balance = (await db`SELECT COALESCE(SUM(balance),0) AS total FROM loyalty_wallets WHERE business_id=${business.id}`)[0];
+        return res.json({ sales_today: row.sales, earned_today: row.earned, redeemed_today: 0, transactions_today: row.transactions, customers_today: row.customers, total_balance: balance.total });
+      }
+      if (name.includes('business_customers')) return res.json(await db`SELECT c.id AS customer_id, c.name, c.phone, w.balance FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id WHERE w.business_id=${business.id} ORDER BY c.created_at DESC`);
+      if (name.includes('business_transactions')) return res.json(await db`SELECT t.id AS transaction_id, c.name, c.phone, t.purchase_amount, t.earned_amount, t.type, t.created_at FROM loyalty_transactions t JOIN loyalty_customers c ON c.id=t.customer_id WHERE t.business_id=${business.id} ORDER BY t.created_at DESC LIMIT 100`);
+      if (name.includes('redeem_loyalty_balance')) {
+        const amount = Number(payload.p_redeem_amount), phone = String(payload.p_phone || '');
+        const c = (await db`SELECT c.id, w.balance FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id WHERE c.phone=${phone} AND w.business_id=${business.id}`)[0];
+        if (!c || !Number.isFinite(amount) || amount <= 0 || Number(c.balance) < amount) return res.status(400).json({ error: 'Insufficient balance or invalid amount' });
+        const updated = (await db`UPDATE loyalty_wallets SET balance=balance-${amount}, updated_at=NOW() WHERE customer_id=${c.id} RETURNING balance`)[0];
+        await db`INSERT INTO loyalty_transactions (customer_id,business_id,purchase_amount,earned_amount,type) VALUES (${c.id},${business.id},0,${-amount},'redeem')`;
+        return res.json({ redeemed_amount: amount, balance: updated.balance });
+      }
+      if (name.includes('create_loyalty_transaction')) {
+        const amount = Number(payload.p_purchase_amount), phone = String(payload.p_phone || '');
+        const c = (await db`SELECT c.id, w.balance FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id WHERE c.phone=${phone} AND w.business_id=${business.id}`)[0];
+        if (!c || !Number.isFinite(amount) || amount <= 0) return res.status(400).json({ error: 'Customer or amount is invalid' });
+        const earned = Math.round(amount * Number(business.loyalty_rate) / 100 * 100) / 100;
+        const tx = (await db`INSERT INTO loyalty_transactions (customer_id,business_id,purchase_amount,earned_amount) VALUES (${c.id},${business.id},${amount},${earned}) RETURNING id`)[0];
+        const updated = (await db`UPDATE loyalty_wallets SET balance=balance+${earned}, updated_at=NOW() WHERE customer_id=${c.id} RETURNING balance`)[0];
+        return res.json({ transaction_id: tx.id, earned_amount: earned, balance: updated.balance });
+      }
+      return res.status(400).json({ error: 'Unsupported merchant operation' });
+    }
     if (action === 'admin_rpc') {
       const name = String(p.name || ''), payload = p.payload || {};
       if (name === 'is_system_admin') return res.json(true);
