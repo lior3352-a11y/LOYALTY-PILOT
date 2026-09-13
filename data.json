@@ -1,0 +1,60 @@
+{
+  "businesses": [
+    {
+      "id": "biz_52ae5390d2",
+      "name": "Test Beauty Studio",
+      "category": "Beauty",
+      "email": "verify-20260912@example.com",
+      "status": "demo-active",
+      "reward": 5,
+      "createdAt": "2026-09-12T10:54:23.955Z",
+      "slug": "test-beauty-studio-90d2"
+    },
+    {
+      "id": "biz_5c87b77a95",
+      "name": "Neon Verification Studio",
+      "category": "Beauty",
+      "email": "neon-verify-20260912@example.com",
+      "status": "demo-active",
+      "reward": 5,
+      "createdAt": "2026-09-12T10:59:22.819Z",
+      "slug": "neon-verification-studio-7a95"
+    }
+  ],
+  "customers": [
+    {
+      "phone": "4155550198",
+      "wallets": {
+        "biz_52ae5390d2": {
+          "businessName": "Test Beauty Studio",
+          "balance": 5,
+          "history": [
+            {
+              "type": "earn",
+              "amount": 5,
+              "ts": "2026-09-12T10:54:49.609Z"
+            }
+          ]
+        }
+      },
+      "createdAt": "2026-09-12T10:54:49.609Z"
+    },
+    {
+      "phone": "2125550147",
+      "wallets": {
+        "biz_5c87b77a95": {
+          "businessName": "Neon Verification Studio",
+          "balance": 5,
+          "history": [
+            {
+              "type": "earn",
+              "amount": 5,
+              "ts": "2026-09-12T10:59:49.860Z"
+            }
+          ]
+        }
+      },
+      "createdAt": "2026-09-12T10:59:49.860Z"
+    }
+  ]
+}
