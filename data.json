@@ -19,6 +19,46 @@
       "reward": 5,
       "createdAt": "2026-09-12T10:59:22.819Z",
       "slug": "neon-verification-studio-7a95"
+    },
+    {
+      "id": "biz_287785d54e",
+      "name": "Neon End To End Studio",
+      "category": "Beauty",
+      "email": "e2e-20260913@example.com",
+      "status": "demo-active",
+      "reward": 5,
+      "createdAt": "2026-09-13T06:03:33.752Z",
+      "slug": "neon-end-to-end-studio-d54e"
+    },
+    {
+      "id": "biz_1234f47ffe",
+      "name": "Neon End To End Studio",
+      "category": "Beauty",
+      "email": "e2e-20260913@example.com",
+      "status": "demo-active",
+      "reward": 5,
+      "createdAt": "2026-09-13T06:03:34.842Z",
+      "slug": "neon-end-to-end-studio-7ffe"
+    },
+    {
+      "id": "biz_3e4f979dfc",
+      "name": "Neon Persistence Check",
+      "category": "Fashion",
+      "email": "persist-20260913@example.com",
+      "status": "demo-active",
+      "reward": 5,
+      "createdAt": "2026-09-13T06:03:39.666Z",
+      "slug": "neon-persistence-check-9dfc"
+    },
+    {
+      "id": "biz_a55fd753ff",
+      "name": "Neon Reload Check",
+      "category": "Cosmetics",
+      "email": "reload-20260913@example.com",
+      "status": "demo-active",
+      "reward": 5,
+      "createdAt": "2026-09-13T06:04:10.605Z",
+      "slug": "neon-reload-check-53ff"
     }
   ],
   "customers": [
@@ -55,6 +95,40 @@
         }
       },
       "createdAt": "2026-09-12T10:59:49.860Z"
+    },
+    {
+      "phone": "6465550133",
+      "wallets": {
+        "biz_3e4f979dfc": {
+          "businessName": "Neon Persistence Check",
+          "balance": 5,
+          "history": [
+            {
+              "type": "earn",
+              "amount": 5,
+              "ts": "2026-09-13T06:03:39.686Z"
+            }
+          ]
+        }
+      },
+      "createdAt": "2026-09-13T06:03:39.686Z"
+    },
+    {
+      "phone": "9175550122",
+      "wallets": {
+        "biz_a55fd753ff": {
+          "businessName": "Neon Reload Check",
+          "balance": 5,
+          "history": [
+            {
+              "type": "earn",
+              "amount": 5,
+              "ts": "2026-09-13T06:04:10.626Z"
+            }
+          ]
+        }
+      },
+      "createdAt": "2026-09-13T06:04:10.626Z"
     }
   ]
 }
