@@ -20,6 +20,21 @@ export default async function handler(req, res) {
   try {
     const db = sql(); await ensureSchema(db);
     const { action, ...p } = req.body || {};
+    if (action === 'admin_rpc') {
+      const name = String(p.name || ''), payload = p.payload || {};
+      if (name === 'is_system_admin') return res.json(true);
+      if (name === 'get_system_admin_businesses_secure') {
+        const businesses = await db`SELECT b.id AS business_id, b.name, b.loyalty_rate, COUNT(DISTINCT t.id)::int AS transactions_count, COUNT(DISTINCT w.customer_id)::int AS users_count FROM loyalty_businesses b LEFT JOIN loyalty_transactions t ON t.business_id=b.id LEFT JOIN loyalty_wallets w ON w.business_id=b.id GROUP BY b.id ORDER BY b.id`;
+        return res.json(businesses);
+      }
+      if (name === 'get_system_business_users_secure') return res.json([]);
+      if (name === 'update_system_business_secure') {
+        const id = Number(payload.p_business_id), nameValue = String(payload.p_name || '').trim(), rate = Number(payload.p_loyalty_rate);
+        if (!id || !nameValue || !Number.isFinite(rate) || rate < 0 || rate > 100) return res.status(400).json({ error: 'Invalid business details' });
+        await db`UPDATE loyalty_businesses SET name=${nameValue}, loyalty_rate=${rate} WHERE id=${id}`; return res.json(true);
+      }
+      return res.status(400).json({ error: 'Unsupported admin operation' });
+    }
     if (action === 'create_business') {
       const name = String(p.name || '').trim(), rate = Number(p.loyalty_rate ?? 10);
       if (!name || !Number.isFinite(rate) || rate < 0 || rate > 100) return res.status(400).json({ error: 'Invalid business details' });
