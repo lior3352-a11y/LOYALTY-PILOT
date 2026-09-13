@@ -11,7 +11,7 @@ async function ensureSchema(db) {
   await db`CREATE TABLE IF NOT EXISTS loyalty_wallets (customer_id BIGINT PRIMARY KEY REFERENCES loyalty_customers(id) ON DELETE CASCADE, business_id BIGINT NOT NULL REFERENCES loyalty_businesses(id) ON DELETE CASCADE, balance NUMERIC(12,2) NOT NULL DEFAULT 0, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_transactions (id BIGSERIAL PRIMARY KEY, customer_id BIGINT NOT NULL REFERENCES loyalty_customers(id) ON DELETE CASCADE, business_id BIGINT NOT NULL REFERENCES loyalty_businesses(id) ON DELETE CASCADE, purchase_amount NUMERIC(12,2) NOT NULL, earned_amount NUMERIC(12,2) NOT NULL DEFAULT 0, type TEXT NOT NULL DEFAULT 'earn', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   const rows = await db`SELECT id FROM loyalty_businesses ORDER BY id LIMIT 1`;
-  if (!rows.length) await db`INSERT INTO loyalty_businesses (name, loyalty_rate, qr_token) VALUES ('קפה העיר', 12, gen_random_uuid()::text)`;
+  if (!rows.length) await db`INSERT INTO loyalty_businesses (name, loyalty_rate, qr_token) VALUES ('קפה העיר', 12, ${crypto.randomUUID()})`;
 }
 
 export default async function handler(req, res) {
