@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
+    "@vercel/analytics": "^2.0.1",
     "stripe": "^22.6.2"
   }
 }
