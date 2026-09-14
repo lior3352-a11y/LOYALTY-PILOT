@@ -1,8 +1,8 @@
 {
   "id":"./customer.html",
-  "name":"LOYALTY - הארנק האישי שלי",
+  "name":"LOYALTY - My personal wallet",
   "short_name":"LOYALTY",
-  "description":"ארנק הנאמנות האישי של LOYALTY",
+  "description":"Your personal LOYALTY wallet",
   "start_url":"./customer.html?source=pwa",
   "scope":"./",
   "display":"standalone",
