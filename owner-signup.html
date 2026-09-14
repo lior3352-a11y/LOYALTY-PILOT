@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0e1b2b">
+<title>Create Business Account — LOYALTY US</title>
+<style>
+:root{--navy:#0e1b2b;--navy2:#203a5a;--gold:#d7a23a;--bg:#eef2f6;--text:#14213d;--muted:#667085;--line:#e2e7ee}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.app{max-width:720px;margin:auto;min-height:100vh;background:#f7f9fc}.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:26px 24px;border-radius:0 0 26px 26px}.brand{font-size:28px;font-weight:900}.hello{margin-top:10px;color:#dbe6f2}.content{padding:20px}.card{background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 7px 22px rgba(0,0,0,.06)}label{display:block;font-weight:800;margin:12px 0 6px}input{width:100%;padding:14px;border:1px solid #cfd7e3;border-radius:12px;font-size:18px}.btn{width:100%;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:900;background:var(--navy);color:#fff;cursor:pointer;margin-top:14px}.btn.secondary{background:#fff;color:var(--navy);border:1px solid #cfd7e3}.btn:disabled{opacity:.6}.status{padding:12px 14px;border-radius:13px;margin-top:12px}.ok{background:#eaf8f1;color:#086b42}.warn{background:#fff6e5;color:#7a4b00}.small{font-size:13px;color:var(--muted)}.price{font-size:34px;font-weight:900;color:var(--gold);margin:6px 0}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:520px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app"><div class="top"><div class="brand">LOYALTY — BUSINESS</div><div class="hello">Create your business account</div></div><div class="content"><div class="card">
+<h2>Join LOYALTY US</h2><div class="price">$49/month</div><div class="small">Create your business account and start your 14-day trial.</div>
+<label>Business name</label><input id="businessName" autocomplete="organization" placeholder="Your business name">
+<div class="row"><div><label>Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div><div><label>Phone</label><input id="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567"></div></div>
+<label>Password</label><input id="password" type="password" autocomplete="new-password" placeholder="Minimum 8 characters">
+<label>Confirm password</label><input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat password">
+<button id="signupBtn" class="btn" onclick="signup()">Create business account</button>
+<button class="btn secondary" onclick="location.href='merchant.html'">Already have an account? Log in</button><div id="result"></div>
+</div></div></div>
+<script>
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function signup(){
+ const name=businessName.value.trim(),emailValue=email.value.trim(),phoneValue=phone.value.trim(),passwordValue=password.value,confirmValue=confirmPassword.value;
+ if(!name||!emailValue||!passwordValue){result.innerHTML='<div class="status warn">Please complete business name, email and password.</div>';return}
+ if(passwordValue.length<8){result.innerHTML='<div class="status warn">Password must be at least 8 characters.</div>';return}
+ if(passwordValue!==confirmValue){result.innerHTML='<div class="status warn">Passwords do not match.</div>';return}
+ signupBtn.disabled=true;signupBtn.textContent='Creating account…';
+ try{
+  const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register_business',name,email:emailValue,password:passwordValue,phone:phoneValue})});
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(data.error||data.message||'Could not create business account');
+  if(data.access_token)localStorage.setItem('loyalty_merchant_access_token',data.access_token);
+  localStorage.setItem('loyalty_merchant_email',emailValue);
+  result.innerHTML='<div class="status ok"><b>Account created successfully.</b><br>Opening your business dashboard…</div>';
+  setTimeout(()=>location.href='merchant.html',700);
+ }catch(e){result.innerHTML='<div class="status warn"><b>Sign-up failed.</b><br>'+esc(e.message)+'</div>'}
+ finally{signupBtn.disabled=false;signupBtn.textContent='Create business account'}
+}
+</script>
+</body></html>
