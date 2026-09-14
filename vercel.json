@@ -11,6 +11,8 @@
     { "src": "/api/health", "dest": "/api/health.js" },
     { "src": "/api/db-info", "dest": "/api/db-info.js" },
     { "src": "/api/neon", "dest": "/api/neon.js" },
+    { "src": "/api/billing", "dest": "/api/billing.js" },
+    { "src": "/api/stripe-webhook", "dest": "/api/stripe-webhook.js" },
     { "src": "/api/supabase-proxy", "dest": "/api/supabase-proxy.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
