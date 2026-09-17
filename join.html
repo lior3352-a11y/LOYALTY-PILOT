@@ -12,56 +12,24 @@
 <title>Join LOYALTY</title>
 <style>
 :root{--ink:#172033;--muted:#7b8494;--gold:#c89a3d;--bg:#f7f8fb;--line:#e7e9ee;--green:#0b7a53}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(180deg,#fff 0,#f7f8fb 70%);color:var(--ink)}.app{max-width:480px;margin:auto;min-height:100vh;padding:26px 18px 34px}.brand{text-align:center;font-size:30px;font-weight:900;letter-spacing:2px}.dot{color:var(--gold)}.subtitle{text-align:center;color:var(--muted);font-size:14px;margin-top:5px}.hero{margin:26px 0 18px;text-align:center}.hero h1{font-size:31px;line-height:1.15;margin:0 0 10px}.hero p{margin:0;color:var(--muted);font-size:16px}.reward{margin:20px 0;background:linear-gradient(135deg,#fffaf0,#fff);border:1px solid #ead8a7;border-radius:20px;padding:16px;display:flex;align-items:center;justify-content:space-between}.reward strong{font-size:28px;color:#9a741d}.reward span{font-weight:800}.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 14px 35px rgba(23,32,51,.07)}label{display:block;font-weight:800;margin:14px 2px 7px}input{width:100%;padding:15px 16px;border:1px solid #d9dde5;border-radius:15px;font-size:18px;background:#fbfcfd;outline:none}input:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(200,154,61,.12);background:white}button{width:100%;margin-top:20px;padding:16px;border:0;border-radius:16px;background:#172033;color:#fff;font-weight:900;font-size:18px;box-shadow:0 10px 24px rgba(23,32,51,.16)}button:disabled{opacity:.6}.note{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}.msg{margin-top:14px;padding:13px;border-radius:13px;font-size:14px}.ok{background:#eaf8f1;color:#086b42;border:1px solid #bce6d2}.bad{background:#fff2e5;color:#8a4b00;border:1px solid #efd1a4}.install-note{margin-top:14px;padding:13px;border-radius:13px;background:#fff8e8;border:1px solid #ead59a;color:#6f581d;font-size:14px;font-weight:700}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.step{background:#fff;border:1px solid var(--line);border-radius:15px;padding:11px 6px;text-align:center;font-size:12px;color:var(--muted)}.step b{display:block;color:var(--gold);font-size:18px;margin-bottom:3px}
-</style>
+[hidden]{display:none!important}</style>
 <link rel="stylesheet" href="accessibility.css"></head>
 <body>
 <div class="app">
   <div class="brand">LOYALTY<span class="dot">.</span></div>
   <div class="subtitle">Your personal loyalty club</div>
-  <div class="hero"><h1>Join. Earn. Return.</h1><p>Quick sign-up and a personal wallet that opens instantly on your phone.</p></div>
+  <div class="hero"><h1>Join. Earn. Return.</h1><p>Quick sign-up and a rewards account that opens instantly on your phone.</p></div>
   <div class="reward"><span><span id="businessName">Loading business…</span><br><small style="color:#7b8494">Earn rewards on every purchase</small></span><strong id="rewardRate">--%</strong></div>
   <div class="card">
-    <label>Your name</label><input id="name" autocomplete="name" placeholder="Full name">
+    <label id="nameLabel" for="name">Your name</label><input id="name" autocomplete="name" placeholder="Full name">
     <label>Phone number</label><input id="phone" inputmode="tel" autocomplete="tel" placeholder="(555) 123-4567">
-    <button id="btn" onclick="registerCustomer()" disabled>Join now</button>
-    <div id="msg"></div>
+    <label for="password">Password (at least 12 characters)</label><input id="password" type="password" minlength="12" maxlength="128" autocomplete="new-password"><button id="btn" onclick="submitCustomer()" disabled>Join now</button>
+    <button id="modeBtn" type="button" onclick="toggleCustomerMode()">Already joined? Sign in</button><div id="msg" role="status"></div><p id="recoveryHelp">Forgot your password or joined without one? Ask the business to verify your identity and provide a one-time password setup link.</p>
     <div id="installNote" class="install-note">After sign-up, we’ll offer to add LOYALTY to your home screen so you can open it with one tap.</div>
-    <div class="note">No card. No password.</div>
+    <div class="note">Password-protected access. You approve redemptions.</div>
   </div>
   <div class="steps"><div class="step"><b>1</b>Sign up</div><div class="step"><b>2</b>Add to home screen</div><div class="step"><b>3</b>Earn rewards</div></div>
 </div>
-<script>
-const params=new URLSearchParams(location.search);
-const businessId=Number(params.get('business_id')||0);
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
-async function loadBusiness(){
- const msg=document.getElementById('msg'),btn=document.getElementById('btn');
- if(!businessId){msg.className='msg bad';msg.textContent='This business link is invalid.';return}
- try{
-  const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'public_business',business_id:businessId})});
-  const data=await r.json();
-  if(!r.ok||!data.business)throw new Error(data.error||'Business not found');
-  document.getElementById('businessName').textContent=data.business.name;
-  document.getElementById('rewardRate').textContent=Number(data.business.loyalty_rate||0)+'%';
-  document.title='Join '+data.business.name+' Loyalty';
-  btn.disabled=false;
- }catch(e){msg.className='msg bad';msg.textContent=e.message||'This business link is unavailable.'}
-}
-async function registerCustomer(){
- const name=document.getElementById('name').value.trim(),phone=document.getElementById('phone').value.trim(),btn=document.getElementById('btn'),msg=document.getElementById('msg');
- if(!name||!phone){msg.className='msg bad';msg.textContent='Enter your name and phone number.';return}
- btn.disabled=true;btn.textContent='Joining…';
- try{
-  const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register_customer',name,phone,business_id:businessId})});
-  const data=await r.json();
-  if(!r.ok||!data.token)throw new Error(data.error||'Wallet token was not received');
-  localStorage.setItem('loyalty_wallet_token',data.token);
-  msg.className='msg ok';msg.innerHTML='<b>Sign-up successful ✓</b><br>Opening your wallet…';
-  setTimeout(()=>location.href='customer.html?token='+encodeURIComponent(data.token)+'&v=8',650);
- }catch(e){msg.className='msg bad';msg.textContent='Sign-up failed: '+e.message}
- finally{btn.disabled=false;btn.textContent='Join now'}
-}
-loadBusiness();
-</script>
+<script src="customer-access.js"></script>
 <script src="site-common.js"></script></body>
 </html>

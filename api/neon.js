@@ -1,3 +1,4 @@
+import { requestGuard, schema, customerAction, issueSetup, redeem, rateLimit } from '../lib/customer-security.js';
 import { neon } from '@neondatabase/serverless';
 import { randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 
@@ -55,10 +56,25 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST required' });
   try {
-    const db = sql(); await ensureSchema(db);
+    requestGuard(req);
+    const db = sql(); await ensureSchema(db); await schema(db);
     const { action, ...p } = req.body || {};
+    if (await customerAction(db, req, res, action, p)) return;
+    if (action === 'logout') {
+      const header = req.headers.authorization || '';
+      const token = p.access_token || (header.startsWith('Bearer ') ? header.slice(7) : '');
+      await db`DELETE FROM loyalty_sessions WHERE token=${token}`;
+      return res.json({ ok: true });
+    }
+    if (action === 'customer_setup') {
+      const actor = await sessionUser(db, req, p.access_token);
+      if (p.identity_verified !== true) return res.status(400).json({ error: 'Verify the customer identity in person before restoring access' });
+      return res.json(await issueSetup(db, actor, p.phone));
+    }
     if (action === 'login') {
       const email = String(p.email || '').trim().toLowerCase(), password = String(p.password || '');
+      await rateLimit(db, 'merchant:' + email);
+      if (password.length > 128) return res.status(401).json({ error: 'Invalid credentials' });
       const user = (await db`SELECT id,email,role,business_id,password_hash FROM loyalty_users WHERE email=${email}`).at(0);
       if (!user || !verifyPassword(password, user.password_hash)) return res.status(401).json({ error: 'Invalid credentials' });
       const token = randomUUID();
@@ -100,13 +116,11 @@ export default async function handler(req, res) {
       if (name.includes('business_dashboard')) { const row=(await db`SELECT COALESCE(SUM(purchase_amount),0) sales,COALESCE(SUM(CASE WHEN type='earn' THEN earned_amount ELSE 0 END),0) earned,COALESCE(SUM(CASE WHEN type='redeem' THEN -earned_amount ELSE 0 END),0) redeemed,COUNT(*)::int transactions,COUNT(DISTINCT customer_id)::int customers FROM loyalty_transactions WHERE business_id=${businessId} AND created_at>=CURRENT_DATE`).at(0); const balance=(await db`SELECT COALESCE(SUM(balance),0) total FROM loyalty_wallets WHERE business_id=${businessId}`).at(0); return res.json({sales_today:row.sales,earned_today:row.earned,redeemed_today:row.redeemed,transactions_today:row.transactions,customers_today:row.customers,total_balance:balance.total,total_customer_balance:balance.total}); }
       if (name.includes('business_customers')) return res.json(await db`SELECT c.id customer_id,c.name,c.phone,w.balance FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id AND w.business_id=c.business_id WHERE c.business_id=${businessId} ORDER BY c.created_at DESC`);
       if (name.includes('business_transactions') || name.includes('loyalty_history')) { const limit=Math.min(100,Math.max(1,Number(payload.p_limit||20))); return res.json(await db`SELECT t.id transaction_id,c.name,c.phone,t.purchase_amount,t.earned_amount,t.type,t.created_at FROM loyalty_transactions t JOIN loyalty_customers c ON c.id=t.customer_id AND c.business_id=t.business_id WHERE t.business_id=${businessId} ORDER BY t.created_at DESC LIMIT ${limit}`); }
-      if (name.includes('redeem_loyalty_balance')) { const amount=Number(payload.p_redeem_amount),phone=String(payload.p_phone||''); if(!Number.isFinite(amount)||amount<=0)return res.status(400).json({error:'Invalid amount'}); const c=(await db`SELECT c.id,w.balance FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id AND w.business_id=${businessId} WHERE c.phone=${phone} AND c.business_id=${businessId}`).at(0); if(!c||Number(c.balance)<amount)return res.status(400).json({error:'Insufficient balance or invalid amount'}); const u=(await db`UPDATE loyalty_wallets SET balance=balance-${amount},updated_at=NOW() WHERE customer_id=${c.id} AND business_id=${businessId} AND balance>=${amount} RETURNING balance`).at(0); await db`INSERT INTO loyalty_transactions(customer_id,business_id,purchase_amount,earned_amount,type) VALUES(${c.id},${businessId},0,${-amount},'redeem')`; return res.json({redeemed_amount:amount,balance:u.balance}); }
+      if (name.includes('redeem_loyalty_balance')) return res.json(await redeem(db, actor, payload));
       if (name.includes('create_loyalty_transaction')) { const amount=Number(payload.p_purchase_amount),phone=String(payload.p_phone||''); const c=(await db`SELECT c.id,w.balance FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id AND w.business_id=${businessId} WHERE c.phone=${phone} AND c.business_id=${businessId}`).at(0); if(!c||!Number.isFinite(amount)||amount<=0)return res.status(400).json({error:'Customer or amount is invalid'}); const earned=Math.round(amount*Number(business.loyalty_rate))/100; const u=(await db`UPDATE loyalty_wallets SET balance=balance+${earned},updated_at=NOW() WHERE customer_id=${c.id} AND business_id=${businessId} RETURNING balance`).at(0); const tx=(await db`INSERT INTO loyalty_transactions(customer_id,business_id,purchase_amount,earned_amount) VALUES(${c.id},${businessId},${amount},${earned}) RETURNING id`).at(0); return res.json({transaction_id:tx.id,earned_amount:earned,balance:u.balance}); }
       return res.status(400).json({error:'Unsupported merchant operation'});
     }
     if (action === 'create_business') { const actor=await sessionUser(db,req,p.access_token); if(actor?.role!=='admin')return res.status(403).json({error:'Not allowed'}); const name=String(p.name||'').trim(),rate=Number(p.loyalty_rate??10); if(!name||!Number.isFinite(rate)||rate<0||rate>100)return res.status(400).json({error:'Invalid business details'}); const business=(await db`INSERT INTO loyalty_businesses(name,loyalty_rate,qr_token) VALUES(${name},${rate},${randomUUID()}) RETURNING id,name,loyalty_rate,qr_token`).at(0); await db`INSERT INTO loyalty_business_settings(business_id) VALUES(${business.id})`; return res.json({business}); }
-    if (action === 'register_customer') { const phone=String(p.phone||'').trim(),name=String(p.name||'').trim(),businessId=Number(p.business_id||0); if(!name||!phone||!businessId)return res.status(400).json({error:'Name, phone, and business are required'}); const business=(await db`SELECT id FROM loyalty_businesses WHERE id=${businessId}`).at(0); if(!business)return res.status(409).json({error:'Business not found'}); const existing=(await db`SELECT wallet_token FROM loyalty_customers WHERE phone=${phone} AND business_id=${businessId}`).at(0); if(existing)return res.json({token:existing.wallet_token}); const customer=(await db`INSERT INTO loyalty_customers(name,phone,business_id,wallet_token) VALUES(${name},${phone},${businessId},${randomUUID()}) RETURNING id,wallet_token`).at(0); await db`INSERT INTO loyalty_wallets(customer_id,business_id) VALUES(${customer.id},${businessId})`; return res.json({token:customer.wallet_token}); }
-    if (action === 'wallet') { const token=String(p.token||''); const c=(await db`SELECT c.id,c.name,c.wallet_token,w.balance,b.name business_name,b.loyalty_rate,w.business_id FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id AND w.business_id=c.business_id JOIN loyalty_businesses b ON b.id=w.business_id WHERE c.wallet_token=${token}`).at(0); if(!c)return res.status(404).json({error:'Wallet not found'}); const transactions=await db`SELECT purchase_amount,earned_amount,type,created_at FROM loyalty_transactions WHERE customer_id=${c.id} AND business_id=${c.business_id} ORDER BY created_at DESC LIMIT 100`; return res.json({customer:c,transactions}); }
     return res.status(400).json({error:'Unknown action'});
   } catch(error) { console.error('[v0] Neon API error:',error?.message||error); return res.status(error.status || 500).json({error:error.status ? error.message : 'Database operation failed'}); }
 }
