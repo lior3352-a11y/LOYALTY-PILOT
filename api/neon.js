@@ -21,6 +21,8 @@ async function ensureSchema(db) {
   await db`CREATE TABLE IF NOT EXISTS loyalty_wallets (customer_id BIGINT NOT NULL REFERENCES loyalty_customers(id) ON DELETE CASCADE, business_id BIGINT NOT NULL REFERENCES loyalty_businesses(id) ON DELETE CASCADE, balance NUMERIC(12,2) NOT NULL DEFAULT 0, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), PRIMARY KEY (customer_id, business_id))`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_transactions (id BIGSERIAL PRIMARY KEY, customer_id BIGINT NOT NULL REFERENCES loyalty_customers(id) ON DELETE CASCADE, business_id BIGINT NOT NULL REFERENCES loyalty_businesses(id) ON DELETE CASCADE, purchase_amount NUMERIC(12,2) NOT NULL, earned_amount NUMERIC(12,2) NOT NULL DEFAULT 0, type TEXT NOT NULL DEFAULT 'earn', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_users (id BIGSERIAL PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK (role IN ('admin','owner','manager','staff')), business_id BIGINT REFERENCES loyalty_businesses(id) ON DELETE SET NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
+  await db`ALTER TABLE loyalty_users ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMPTZ`;
+  await db`ALTER TABLE loyalty_users ADD COLUMN IF NOT EXISTS terms_version TEXT`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_sessions (token TEXT PRIMARY KEY, user_id BIGINT NOT NULL REFERENCES loyalty_users(id) ON DELETE CASCADE, expires_at TIMESTAMPTZ NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_business_settings (business_id BIGINT PRIMARY KEY REFERENCES loyalty_businesses(id) ON DELETE CASCADE, settings JSONB NOT NULL DEFAULT '{}'::jsonb, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_rewards (id BIGSERIAL PRIMARY KEY, business_id BIGINT NOT NULL REFERENCES loyalty_businesses(id) ON DELETE CASCADE, name TEXT NOT NULL, points_cost NUMERIC(12,2) NOT NULL, active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
@@ -66,11 +68,12 @@ export default async function handler(req, res) {
     if (action === 'register_business') {
       const name = String(p.name || '').trim(), email = String(p.email || '').trim().toLowerCase(), password = String(p.password || ''), phone = String(p.phone || '').trim();
       if (!name || !email || password.length < 8) return res.status(400).json({ error: 'Business name, email, and an 8 character password are required' });
+      if (p.terms_accepted !== true) return res.status(400).json({ error: 'Terms of Service acceptance is required' });
       if ((await db`SELECT 1 FROM loyalty_users WHERE email=${email}`).length) return res.status(409).json({ error: 'An account with this email already exists' });
       const business = (await db`INSERT INTO loyalty_businesses(name,phone,qr_token) VALUES(${name},${phone || null},${randomUUID()}) RETURNING id,name,phone,loyalty_rate,qr_token`).at(0);
       await db`INSERT INTO loyalty_business_settings(business_id) VALUES(${business.id})`;
       await db`INSERT INTO loyalty_subscriptions(business_id,trial_start,trial_end,subscription_status) VALUES(${business.id},NOW(),NOW()+INTERVAL '14 days','trialing')`;
-      const user = (await db`INSERT INTO loyalty_users(email,password_hash,role,business_id) VALUES(${email},${hashPassword(password)},'owner',${business.id}) RETURNING id,email,role,business_id`).at(0);
+      const user = (await db`INSERT INTO loyalty_users(email,password_hash,role,business_id,terms_accepted_at,terms_version) VALUES(${email},${hashPassword(password)},'owner',${business.id},NOW(),'2026-09-17') RETURNING id,email,role,business_id,terms_accepted_at,terms_version`).at(0);
       const token = randomUUID(); await db`INSERT INTO loyalty_sessions(token,user_id,expires_at) VALUES(${token},${user.id},NOW()+INTERVAL '30 days')`;
       return res.status(201).json({ token, access_token: token, user, business });
     }
