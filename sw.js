@@ -1,5 +1,5 @@
-const CACHE='loyalty-pilot-v8';
-const ASSETS=['./','./index.html','./join.html','./customer.html','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'];
+const CACHE='loyalty-pilot-v10';
+const ASSETS=['./','./index.html','./join.html','./customer.html','./accessibility.html','./terms.html','./accessibility.css','./site-common.js','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'];
 
 self.addEventListener('install',event=>{
   self.skipWaiting();
