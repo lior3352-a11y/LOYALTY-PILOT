@@ -13,7 +13,7 @@
 <style>
 :root{--ink:#172033;--muted:#7b8494;--gold:#c89a3d;--bg:#f7f8fb;--line:#e7e9ee;--green:#0b7a53}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(180deg,#fff 0,#f7f8fb 70%);color:var(--ink)}.app{max-width:480px;margin:auto;min-height:100vh;padding:26px 18px 34px}.brand{text-align:center;font-size:30px;font-weight:900;letter-spacing:2px}.dot{color:var(--gold)}.subtitle{text-align:center;color:var(--muted);font-size:14px;margin-top:5px}.hero{margin:26px 0 18px;text-align:center}.hero h1{font-size:31px;line-height:1.15;margin:0 0 10px}.hero p{margin:0;color:var(--muted);font-size:16px}.reward{margin:20px 0;background:linear-gradient(135deg,#fffaf0,#fff);border:1px solid #ead8a7;border-radius:20px;padding:16px;display:flex;align-items:center;justify-content:space-between}.reward strong{font-size:28px;color:#9a741d}.reward span{font-weight:800}.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 14px 35px rgba(23,32,51,.07)}label{display:block;font-weight:800;margin:14px 2px 7px}input{width:100%;padding:15px 16px;border:1px solid #d9dde5;border-radius:15px;font-size:18px;background:#fbfcfd;outline:none}input:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(200,154,61,.12);background:white}button{width:100%;margin-top:20px;padding:16px;border:0;border-radius:16px;background:#172033;color:#fff;font-weight:900;font-size:18px;box-shadow:0 10px 24px rgba(23,32,51,.16)}button:disabled{opacity:.6}.note{text-align:center;color:var(--muted);font-size:12px;margin-top:14px}.msg{margin-top:14px;padding:13px;border-radius:13px;font-size:14px}.ok{background:#eaf8f1;color:#086b42;border:1px solid #bce6d2}.bad{background:#fff2e5;color:#8a4b00;border:1px solid #efd1a4}.install-note{margin-top:14px;padding:13px;border-radius:13px;background:#fff8e8;border:1px solid #ead59a;color:#6f581d;font-size:14px;font-weight:700}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.step{background:#fff;border:1px solid var(--line);border-radius:15px;padding:11px 6px;text-align:center;font-size:12px;color:var(--muted)}.step b{display:block;color:var(--gold);font-size:18px;margin-bottom:3px}
 </style>
-</head>
+<link rel="stylesheet" href="accessibility.css"></head>
 <body>
 <div class="app">
   <div class="brand">LOYALTY<span class="dot">.</span></div>
@@ -63,5 +63,5 @@ async function registerCustomer(){
 }
 loadBusiness();
 </script>
-</body>
+<script src="site-common.js"></script></body>
 </html>
