@@ -6,3 +6,72 @@ input[type="checkbox"]{width:auto;min-width:20px;min-height:20px}.terms-consent{
 .policy-page{max-width:860px;margin:0 auto;padding:28px 20px 64px;line-height:1.65}.policy-page h1{font-size:clamp(34px,6vw,54px);line-height:1.08}.policy-page h2{margin-top:32px}.policy-page .notice{padding:16px;border:1px solid #d7a23a;border-radius:14px;background:#fff8e8;color:#503b0a}.policy-page a{color:#8a5b05;text-decoration:underline}.policy-page ul{padding-left:24px}.policy-page .back-link{display:inline-block;margin-bottom:18px;font-weight:800}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media(max-width:520px){.legal-links{gap:12px}.policy-page{padding:22px 17px 48px}}
+
+@media(max-width:600px){
+ html,body{max-width:100%;overflow-x:hidden}
+ body{-webkit-text-size-adjust:100%}
+ input,select,textarea{font-size:16px!important}
+ button,.btn,a.btn{min-height:46px}
+ .wrap{width:calc(100% - 28px)!important}
+ .topbar .nav{height:auto;min-height:68px;padding:9px 0;gap:10px}
+ .topbar .brand{font-size:21px;letter-spacing:1px}
+ .topbar .navActions{gap:6px}
+ .topbar .navActions .btn{padding:10px 13px;font-size:12px;white-space:nowrap}
+ .hero{padding:40px 0 48px!important}
+ .heroGrid{gap:18px!important}
+ .hero h1{font-size:clamp(39px,12vw,50px)!important;line-height:1.01;letter-spacing:-1.6px;margin:19px 0 17px}
+ .hero p{font-size:16px!important;line-height:1.55}
+ .heroBtns{display:grid!important;grid-template-columns:1fr;gap:10px}
+ .heroBtns .btn{width:100%}
+ .micro{display:grid!important;grid-template-columns:1fr;gap:7px!important;margin-top:20px!important}
+ .visual{min-height:505px!important}
+ .glow{width:330px!important;height:330px!important}
+ .phone{width:min(274px,82vw)!important;border-radius:38px!important;transform:none!important}
+ .phoneScreen{min-height:510px!important;border-radius:31px!important;padding:17px!important}
+ .notch{margin-bottom:16px!important}
+ .walletBalance{font-size:42px!important}
+ .float{display:none!important}
+ .section{padding:54px 0!important}
+ .sectionHead{margin-bottom:28px!important}
+ .sectionHead h2{font-size:34px!important}
+ .sectionHead p{font-size:16px!important}
+ .card,.step{padding:20px!important;border-radius:20px!important}
+ .businessBox{padding:28px 20px!important;border-radius:26px!important;gap:24px!important}
+ .businessBox h2{font-size:34px!important}
+ .businessBox p{font-size:16px!important}
+ .stat{padding:18px!important}
+ .stat strong{font-size:22px!important}
+ .cta{margin-bottom:48px!important;padding:34px 18px!important;border-radius:26px!important}
+ .cta h2{font-size:34px!important}
+ .cta .btn{width:100%}
+ .app{width:100%;max-width:100%}
+ .app>.top{padding:22px 18px;border-radius:0 0 22px 22px}
+ .app>.top .brand{font-size:23px}
+ .content{padding:14px!important}
+ .content>.card{padding:17px!important;border-radius:17px!important;margin-bottom:13px!important}
+ .content h2{font-size:22px;line-height:1.2;margin-top:3px}
+ .dashboard-grid,.metrics,.customer-stats,.qr-actions{grid-template-columns:1fr!important}
+ .dash b,.metric b{font-size:21px!important;overflow-wrap:anywhere}
+ .history-top,.customer-top{align-items:flex-start;flex-wrap:wrap}
+ .qr-wrap{width:min(250px,100%)!important}
+ .main{padding:19px 15px 26px!important}
+ .title{font-size:28px!important}
+ .balanceCard{padding:20px!important;border-radius:22px!important}
+ .balance{font-size:44px!important}
+ .businessLine{gap:10px}
+ .businessLine .biz{min-width:0}
+ .businessLine .biz>div:last-child{min-width:0;overflow-wrap:anywhere}
+ .businessLine .amount{font-size:17px!important;white-space:nowrap}
+ .installRow{align-items:flex-start}
+ .history{gap:8px}
+}
+@media(max-width:370px){
+ .topbar .brand{font-size:19px}
+ .topbar .navActions .btn{padding:9px 10px;font-size:11px}
+ .hero h1{font-size:37px!important}
+ .phone{width:258px!important}
+ .reward{align-items:flex-start;gap:10px;flex-direction:column}
+ .steps{grid-template-columns:1fr!important}
+ .installRow{flex-direction:column}
+ .installBtn{width:100%}
+}
