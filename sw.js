@@ -1,4 +1,4 @@
-const CACHE='loyalty-pilot-v7';
+const CACHE='loyalty-pilot-v8';
 const ASSETS=['./','./index.html','./join.html','./customer.html','./manifest.webmanifest','./icon.svg','./icon-192.svg','./icon-512.svg'];
 
 self.addEventListener('install',event=>{
