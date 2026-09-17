@@ -20,7 +20,7 @@ const esc=v=>String(v??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'
 const token=()=>localStorage.getItem(TOKEN_KEY)||'';
 function saveSession(d,email){if(d?.access_token)localStorage.setItem(TOKEN_KEY,d.access_token);if(email)localStorage.setItem(USER_KEY,email)}
 function showLogin(){adminArea.classList.add('hidden');loginCard.classList.remove('hidden')}function showAdmin(){loginCard.classList.add('hidden');adminArea.classList.remove('hidden');sessionUser.textContent='מחובר כמנהל: '+(localStorage.getItem(USER_KEY)||'');loadAll()}
-function logout(){localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(USER_KEY);showLogin()}
+async function logout(){try{const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout',access_token:token()})});if(!r.ok)throw Error();}catch{alert('ההתנתקות לא הושלמה. נסו שוב.');return;}localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(USER_KEY);showLogin()}
 async function refreshSession(){return token()}
 async function rpc(name,payload){const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'admin_rpc',name,payload:payload||{}})});const t=await r.text();let d;try{d=t?JSON.parse(t):null}catch{d=t}if(!r.ok)throw new Error(d?.error||String(d||'הפעולה נכשלה'));return d}
 async function ensureAdmin(){if(await rpc('is_system_admin',{})!==true)throw new Error('אין הרשאת מנהל מערכת')}
