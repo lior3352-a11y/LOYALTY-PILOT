@@ -434,7 +434,7 @@
             <h2>מימוש הטבות</h2>
             <label>טלפון הלקוח</label><input id="redeemPhone" dir="ltr" /><label
               >סכום למימוש</label
-            ><input id="redeemAmount" type="number" value="20" /><button
+            ><input id="redeemAmount" type="number" value="20" /><label for="redeemCode">קוד אישור מהלקוח</label><input id="redeemCode" autocomplete="off" dir="ltr" maxlength="19" /><button
               id="redeemBtn"
               class="btn redeem"
               onclick="redeemPoints()"
@@ -613,7 +613,11 @@
           loginBtn.textContent = "כניסה";
         }
       }
-      function logout() {
+      async function logout() {
+        try {
+          const response = await fetch('/api/neon', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout',access_token:token()})});
+          if (!response.ok) throw new Error('Logout failed');
+        } catch { alert('ההתנתקות לא הושלמה. בדקו את החיבור ונסו שוב.'); return; }
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(REFRESH_KEY);
         localStorage.removeItem(USER_KEY);
@@ -759,6 +763,7 @@
           const d = await rpc("redeem_loyalty_balance_secure", {
             p_phone: redeemPhone.value.trim(),
             p_redeem_amount: a,
+            p_approval_code: document.getElementById("redeemCode").value.trim(),
             p_request_id: crypto.randomUUID(),
           });
           balance.textContent = "₪" + Number(d?.balance || 0).toFixed(2);
@@ -767,6 +772,7 @@
           loadDashboard();
           loadCustomers();
           loadHistory();
+          document.getElementById("redeemCode").value = "";
         } catch (e) {
           redeemResult.innerHTML =
             '<div class="status warn">' + esc(e.message) + "</div>";
@@ -1021,5 +1027,5 @@
       }
     </script>
     <script src="site-common.js"></script>
-  </body>
+  <script src="customer-recovery.js"></script></body>
 </html>
