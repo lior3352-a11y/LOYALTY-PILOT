@@ -1,4 +1,6 @@
 export default async function handler(req,res){
+  res.setHeader('Cache-Control','no-store');
+  if(process.env.LOYALTY_REGION === 'us' || process.env.ENABLE_LEGACY_SUPABASE_PROXY !== 'true') return res.status(410).json({message:'Legacy authentication is disabled'});
   const base=process.env.SUPABASE_URL;
   const key=process.env.SUPABASE_ANON_KEY;
   if(!base||!key)return res.status(500).json({message:'Server auth configuration missing'});

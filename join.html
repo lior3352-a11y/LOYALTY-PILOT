@@ -53,6 +53,21 @@
 <script>
 const params=new URLSearchParams(location.search);
 const businessId=Number(params.get('business_id')||0);
+let recoveryToken=new URLSearchParams(location.hash.slice(1)).get('setup'),recoveryMode=null;
+localStorage.removeItem('loyalty_customer_access_token');
+localStorage.removeItem('loyalty_wallet_token');
+history.replaceState(null,'',location.pathname+location.search);
+async function finishRecovery(){
+ if(!recoveryToken||recoveryMode!=='link')return;
+ const r=await fetch('/api/neon',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'customer_complete_recovery',setup_token:recoveryToken})});
+ const d=await r.json();if(!r.ok)throw Error(d.error||'Unable to verify the account');
+ recoveryToken=null;
+}
+if(recoveryToken){
+ showMode('login');
+ document.getElementById('loginBtn').disabled=true;
+ fetch('/api/neon',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'customer_recovery_info',setup_token:recoveryToken})}).then(async r=>{const d=await r.json();if(!r.ok)throw Error(d.error);recoveryMode=d.mode;if(d.mode==='reset'){document.getElementById('loginId').disabled=true;document.getElementById('loginId').value='Verified account recovery';document.getElementById('loginPassword').autocomplete='new-password';document.getElementById('loginBtn').textContent='Set new password';document.getElementById('signupTab').disabled=true;message(document.getElementById('loginMsg'),'Choose a new password (8–128 characters).');}else message(document.getElementById('loginMsg'),'Sign in or create your account to complete verified recovery.');document.getElementById('loginBtn').disabled=false;}).catch(e=>message(document.getElementById('loginMsg'),e.message||'Invalid recovery link'));
+}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
 function showMode(mode){
  const signup=mode==='signup';
@@ -88,15 +103,15 @@ async function registerCustomer(){
  const terms_accepted=document.getElementById('terms').checked;
  const btn=document.getElementById('signupBtn'),msg=document.getElementById('signupMsg');
  if(!first_name||!last_name||!phone||!email||!address||!city||!state||!postal_code){message(msg,'Please complete all required account details.');return}
- if(password.length<8){message(msg,'Password must be at least 8 characters.');return}
+ if(password.length<8||password.length>128){message(msg,'Use a password of 8–128 characters.');return}
  if(password!==confirm){message(msg,'Passwords do not match.');return}
  if(!terms_accepted){message(msg,'Please accept the Terms of Service and Privacy Policy.');return}
  btn.disabled=true;btn.textContent='Creating account…';
  try{
   const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register_customer_account',first_name,last_name,phone,email,password,address,city,state,postal_code,birth_date,terms_accepted,business_id:businessId||null})});
   const data=await r.json();
-  if(!r.ok||!data.access_token)throw new Error(data.error||'Account could not be created');
-  localStorage.setItem('loyalty_customer_access_token',data.access_token);
+  if(!r.ok||!data.ok)throw new Error(data.error||'Account could not be created');
+  await finishRecovery();
   message(msg,'Account created. Opening My Rewards…',true);
   setTimeout(()=>location.href='customer.html',500);
  }catch(e){message(msg,e.message||'Account could not be created')}
@@ -105,16 +120,16 @@ async function registerCustomer(){
 async function loginCustomer(){
  const login=document.getElementById('loginId').value.trim(),password=document.getElementById('loginPassword').value;
  const btn=document.getElementById('loginBtn'),msg=document.getElementById('loginMsg');
- if(!login||!password){message(msg,'Enter your email or mobile number and password.');return}
+ if((!login&&recoveryMode!=='reset')||!password){message(msg,'Enter your email or mobile number and password.');return}
  btn.disabled=true;btn.textContent='Signing in…';
  try{
-  const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'customer_login',login,password,business_id:businessId||null})});
+  const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(recoveryMode==='reset'?{action:'customer_complete_recovery',setup_token:recoveryToken,password}:{action:'customer_login',login,password,business_id:businessId||null})});
   const data=await r.json();
-  if(!r.ok||!data.access_token)throw new Error(data.error||'Sign in failed');
-  localStorage.setItem('loyalty_customer_access_token',data.access_token);
+  if(!r.ok||!data.ok)throw new Error(data.error||'Sign in failed');
+  await finishRecovery();
   location.href='customer.html';
  }catch(e){message(msg,e.message||'Sign in failed')}
- finally{btn.disabled=false;btn.textContent='Sign in'}
+ finally{btn.disabled=false;btn.textContent=recoveryMode==='reset'?'Set new password':'Sign in'}
 }
 if(params.get('mode')==='login')showMode('login');
 loadBusiness();
