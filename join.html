@@ -116,6 +116,7 @@ async function loginCustomer(){
  }catch(e){message(msg,e.message||'Sign in failed')}
  finally{btn.disabled=false;btn.textContent='Sign in'}
 }
+if(params.get('mode')==='login')showMode('login');
 loadBusiness();
 </script>
 <script src="site-common.js"></script></body>
