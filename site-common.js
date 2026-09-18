@@ -26,7 +26,7 @@
    .small,.dash span,.metric span,.history-meta,.customer-meta,.customer-stat span{color:#b8b0a0!important}.warn{background:#33270f!important;color:#f3d58c!important}.ok{background:#173025!important;color:#bce8ce!important}
    .qr-wrap{border-color:#c9a24a!important}.legal-links{background:#111!important;color:#d8c28d!important}.legal-links a{color:#d8c28d!important}
    @media(max-width:520px){.content{padding:16px!important}.top{padding:24px 18px!important}.card{padding:18px!important}.brand{font-size:27px!important}h2{font-size:25px!important}input{font-size:16px!important;min-height:52px}.btn{min-height:52px!important}}
-  `;document.head.append(style);
+  `;if(!document.getElementById('signupCard'))document.head.append(style);
  };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready);else ready();
 })();
