@@ -52,6 +52,27 @@ export function createHandler(connect = database) { return async function handle
       const token = randomUUID(); await db`INSERT INTO loyalty_sessions(token,user_id,expires_at) VALUES(${token},${user.id},NOW()+INTERVAL '30 days')`;
       return res.status(201).json({ token, access_token: token, user, business });
     }
+    if (action === 'directory_profile_get' || action === 'directory_profile_save') {
+      const actor = await sessionUser(db, req, p.access_token);
+      if (actor?.role !== 'owner') return res.status(403).json({error:'Business owner access required'});
+      const businessId = requireBusiness(actor);
+      if (action === 'directory_profile_get') {
+        const row = (await db`SELECT settings->'directory' AS profile FROM loyalty_business_settings WHERE business_id=${businessId}`).at(0);
+        return res.json({profile:row?.profile || {}});
+      }
+      const city=String(p.city||'').trim(), state=String(p.state||'').trim().toUpperCase(), address=String(p.address||'').trim();
+      if (!city || city.length>100 || !/^[A-Z]{2}$/.test(state) || !address || address.length>250 || typeof p.listed!=='boolean') return res.status(400).json({error:'Enter a city, two-letter US state code and street address'});
+      const profile=JSON.stringify({city,state,address,country:'US',listed:p.listed});
+      await db`INSERT INTO loyalty_business_settings(business_id,settings) VALUES(${businessId},jsonb_build_object('directory',${profile}::jsonb)) ON CONFLICT(business_id) DO UPDATE SET settings=loyalty_business_settings.settings || EXCLUDED.settings,updated_at=NOW()`;
+      return res.json({ok:true});
+    }
+    if (action === 'directory_search') {
+      const city=String(p.city||'').trim(), state=String(p.state||'').trim().toUpperCase();
+      const offset=Number(p.offset??0);
+      if(!city || city.length>100 || !/^[A-Z]{2}$/.test(state) || !Number.isInteger(offset) || offset<0 || offset>10000) return res.status(400).json({error:'Enter a city and two-letter US state code'});
+      const rows=await db`SELECT b.id,b.name,b.loyalty_rate,s.settings->'directory'->>'address' AS address,s.settings->'directory'->>'city' AS city,s.settings->'directory'->>'state' AS state FROM loyalty_businesses b JOIN loyalty_business_settings s ON s.business_id=b.id WHERE s.settings->'directory'->>'listed'='true' AND s.settings->'directory'->>'country'='US' AND lower(s.settings->'directory'->>'city')=lower(${city}) AND s.settings->'directory'->>'state'=${state} ORDER BY lower(b.name),b.id LIMIT 21 OFFSET ${offset}`;
+      return res.json({businesses:rows.slice(0,20),has_more:rows.length>20});
+    }
     if (action === 'public_business') {
       const businessId = Number(p.business_id || 0);
       if (!businessId) return res.status(400).json({ error: 'Business is required' });
