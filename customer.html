@@ -30,35 +30,61 @@
 <section id="installCard" class="section"><div class="installRow"><div class="installText"><b>Add LOYALTY to your Home Screen</b><span>Open My Rewards with one tap next time.</span></div><button id="installBtn" class="installBtn" type="button">Add</button></div><div id="iosHelp" class="iosHelp">On iPhone: Safari → Share → Add to Home Screen.</div></section>
 </main><div class="footer">LOYALTY · Scan to See What You Earn</div></div>
 <script>
-const token=localStorage.getItem('loyalty_customer_access_token');
-if(!token){location.replace('join.html?mode=login')}
+localStorage.removeItem('loyalty_customer_access_token');
+localStorage.removeItem('loyalty_wallet_token');
+history.replaceState(null,'',location.pathname);
+let generation=0,signedOut=false,busy=false;
+function clearAccount(){
+ for(const id of ['hello','history','profile','rewards','lastUpdate'])document.getElementById(id).replaceChildren();
+ document.getElementById('total').textContent='$--';document.getElementById('businessCount').textContent='0';
+}
+function showLogin(){signedOut=true;generation++;clearAccount();location.replace('join.html?mode=login');}
+async function secureCall(body){
+ const r=await fetch('/api/neon',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ const d=await r.json();if(r.status===401){showLogin();throw Error('Please sign in');}if(!r.ok)throw Error(d.error||'Request failed');return d;
+}
 function money(n){return '$'+Number(n||0).toFixed(2)}
 async function refresh(){
+ if(signedOut||busy||document.hidden)return;busy=true;const started=generation;
  const s=document.getElementById('status');
  try{
-  const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'customer_account'})});
-  const data=await r.json();
-  if(!r.ok||!data.account)throw new Error(data.error||'Account not found');
+  const data=await secureCall({action:'customer_account'});
+  if(started!==generation||signedOut)return;
   const a=data.account,businesses=data.businesses||[],tx=data.transactions||[];
   document.getElementById('hello').textContent='Hello '+(a.first_name||'')+' 👋';
   const total=businesses.reduce((sum,x)=>sum+Number(x.balance||0),0);
   document.getElementById('total').textContent=money(total);
   document.getElementById('businessCount').textContent=businesses.length+' connected';
-  document.getElementById('rewards').innerHTML=businesses.length?businesses.map(x=>'<div class="rewardRow"><div class="biz"><div class="bizLogo">'+String(x.business_name||'L').charAt(0).toUpperCase()+'</div><div><b>'+escapeHtml(x.business_name||'Business')+'</b><div class="small">'+Number(x.loyalty_rate||0)+'% reward rate</div></div></div><div class="amount">'+money(x.balance)+'</div></div>').join(''):'<div class="empty">No businesses connected yet. You can still use this account when you join a participating business later.</div>';
+  document.getElementById('rewards').innerHTML=businesses.length?businesses.map(x=>'<div class="rewardRow" role="button" tabindex="0" title="Approve a reward redemption" data-business="'+Number(x.business_id)+'"><div class="biz"><div class="bizLogo">'+escapeHtml(String(x.business_name||'L').charAt(0).toUpperCase())+'</div><div><b>'+escapeHtml(x.business_name||'Business')+'</b><div class="small">'+Number(x.loyalty_rate||0)+'% reward rate</div></div></div><div class="amount">'+money(x.balance)+'</div></div>').join(''):'<div class="empty">No businesses connected yet. You can still use this account when you join a participating business later.</div>';
   document.getElementById('history').innerHTML=tx.length?tx.map(x=>{const earned=Number(x.earned_amount||0);return '<div class="history"><div class="left"><div class="dot">$</div><div><b>'+escapeHtml(x.business_name||'Business')+'</b><div class="small">'+(x.type==='redeem'?'Reward redeemed':'Purchase '+money(x.purchase_amount))+'</div></div></div><div class="'+(earned<0?'minus':'plus')+'">'+(earned>=0?'+':'-')+money(Math.abs(earned)).replace('$','$')+'</div></div>'}).join(''):'<div class="empty">No activity yet.</div>';
   document.getElementById('profile').innerHTML=[['Name',(a.first_name||'')+' '+(a.last_name||'')],['Mobile',a.phone],['Email',a.email],['Address',[a.address,a.city,a.state,a.postal_code].filter(Boolean).join(', ')],['Date of birth',a.birth_date?String(a.birth_date).slice(0,10):'Not provided']].map(([k,v])=>'<div class="profileItem"><span>'+k+'</span><b>'+escapeHtml(v||'—')+'</b></div>').join('');
   document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-  s.textContent='Account connected ✓';
+  s.textContent=data.verification_required?'Ask the business owner to verify access to your existing rewards.':'Account connected ✓';
  }catch(e){
-  if(String(e.message).toLowerCase().includes('session')||String(e.message).toLowerCase().includes('sign in')){localStorage.removeItem('loyalty_customer_access_token');location.replace('join.html?mode=login');return}
-  s.textContent='Unable to load your account';document.getElementById('rewards').innerHTML='<div class="empty">Rewards are unavailable right now.</div>';
- }
+  if(started!==generation||signedOut)return;
+  clearAccount();s.textContent='Unable to load your account';
+ }finally{busy=false;}
 }
 function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 async function logoutCustomer(){
- try{await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'customer_logout'})})}catch(_e){}
- localStorage.removeItem('loyalty_customer_access_token');
- location.replace('join.html?mode=login');
+ generation++;signedOut=true;clearAccount();
+ try{await secureCall({action:'customer_logout'});localStorage.setItem('loyalty_customer_logout',String(Date.now()));showLogin();}
+ catch{signedOut=false;document.getElementById('status').textContent='Sign out did not complete. Check your connection and retry.';}
 }
+async function approveReward(row){
+ const value=prompt('Amount of rewards you approve for this business:');if(value===null)return;
+ const started=generation;
+ try{const d=await secureCall({action:'customer_approve_redemption',business_id:Number(row.dataset.business),amount:value});
+ if(started!==generation||signedOut)return;
+ prompt('Give this code to the cashier for $'+d.amount+'. It expires in 5 minutes and can be used once.',d.code.match(/.{4}/g).join('-'));
+ }catch(e){if(!signedOut)document.getElementById('status').textContent=e.message;}
+}
+document.getElementById('rewards').addEventListener('click',e=>{const row=e.target.closest('[data-business]');if(row)approveReward(row);});
+document.getElementById('rewards').addEventListener('keydown',e=>{const row=e.target.closest('[data-business]');if(row&&['Enter',' '].includes(e.key)){e.preventDefault();approveReward(row);}});
+window.addEventListener('storage',e=>{if(e.key==='loyalty_customer_logout')showLogin();});
+window.addEventListener('pagehide',()=>{generation++;clearAccount();});
+window.addEventListener('pageshow',refresh);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
+setInterval(refresh,15000);
 let deferredPrompt=null;const installCard=document.getElementById('installCard'),installBtn=document.getElementById('installBtn'),iosHelp=document.getElementById('iosHelp');const isStandalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);if(isStandalone)installCard.style.display='none';window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});installBtn.addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();const c=await deferredPrompt.userChoice;deferredPrompt=null;if(c.outcome==='accepted')installCard.style.display='none';return}if(isIOS){iosHelp.style.display='block';return}installBtn.textContent='Browser menu → Install app'});window.addEventListener('appinstalled',()=>installCard.style.display='none');if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});refresh();
 </script><script src="site-common.js"></script></body></html>
