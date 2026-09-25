@@ -3,8 +3,9 @@ import { neon } from '@neondatabase/serverless';
 import { randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 
 const sql = () => {
-  if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not configured');
-  return neon(process.env.DATABASE_URL);
+  if (!process.env.ISRAEL_DATABASE_URL) throw new Error('ISRAEL_DATABASE_URL is not configured');
+  if (process.env.ISRAEL_DATABASE_URL === process.env.DATABASE_URL) throw new Error('Israel and US databases must differ');
+  return neon(process.env.ISRAEL_DATABASE_URL);
 };
 const hashPassword = (password, salt = randomUUID()) => `${salt}:${scryptSync(password, salt, 32).toString('hex')}`;
 const verifyPassword = (password, stored) => {
@@ -27,7 +28,7 @@ async function ensureSchema(db) {
   await db`CREATE TABLE IF NOT EXISTS loyalty_sessions (token TEXT PRIMARY KEY, user_id BIGINT NOT NULL REFERENCES loyalty_users(id) ON DELETE CASCADE, expires_at TIMESTAMPTZ NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_business_settings (business_id BIGINT PRIMARY KEY REFERENCES loyalty_businesses(id) ON DELETE CASCADE, settings JSONB NOT NULL DEFAULT '{}'::jsonb, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_rewards (id BIGSERIAL PRIMARY KEY, business_id BIGINT NOT NULL REFERENCES loyalty_businesses(id) ON DELETE CASCADE, name TEXT NOT NULL, points_cost NUMERIC(12,2) NOT NULL, active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
-  await db`CREATE TABLE IF NOT EXISTS loyalty_subscriptions (business_id BIGINT PRIMARY KEY REFERENCES loyalty_businesses(id) ON DELETE CASCADE, trial_start TIMESTAMPTZ NOT NULL, trial_end TIMESTAMPTZ NOT NULL, subscription_status TEXT NOT NULL CHECK (subscription_status IN ('trialing','active','past_due','canceled','expired')), subscription_start TIMESTAMPTZ, next_billing_date TIMESTAMPTZ, stripe_customer_id TEXT UNIQUE, stripe_subscription_id TEXT UNIQUE, plan_name TEXT NOT NULL DEFAULT 'Loyalty US Standard', monthly_price_cents INTEGER NOT NULL DEFAULT 4900, canceled_at TIMESTAMPTZ, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
+  await db`CREATE TABLE IF NOT EXISTS loyalty_subscriptions (business_id BIGINT PRIMARY KEY REFERENCES loyalty_businesses(id) ON DELETE CASCADE, trial_start TIMESTAMPTZ NOT NULL, trial_end TIMESTAMPTZ NOT NULL, subscription_status TEXT NOT NULL CHECK (subscription_status IN ('trialing','active','past_due','canceled','expired')), subscription_start TIMESTAMPTZ, next_billing_date TIMESTAMPTZ, stripe_customer_id TEXT UNIQUE, stripe_subscription_id TEXT UNIQUE, plan_name TEXT NOT NULL DEFAULT 'Loyalty Israel Pilot', monthly_price_cents INTEGER NOT NULL DEFAULT 0, canceled_at TIMESTAMPTZ, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_payment_history (id BIGSERIAL PRIMARY KEY, business_id BIGINT NOT NULL REFERENCES loyalty_businesses(id) ON DELETE CASCADE, stripe_invoice_id TEXT UNIQUE NOT NULL, amount_paid_cents INTEGER NOT NULL DEFAULT 0, status TEXT NOT NULL, paid_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await db`CREATE INDEX IF NOT EXISTS loyalty_payment_history_business_idx ON loyalty_payment_history(business_id, created_at DESC)`;
   await db`ALTER TABLE loyalty_customers ADD COLUMN IF NOT EXISTS business_id BIGINT REFERENCES loyalty_businesses(id) ON DELETE CASCADE`;

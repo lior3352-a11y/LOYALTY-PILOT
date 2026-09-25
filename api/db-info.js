@@ -3,9 +3,9 @@ import { neon } from '@neondatabase/serverless';
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (process.env.ENABLE_DB_INFO !== 'true') return res.status(404).json({ ok: false });
-  if (!process.env.DATABASE_URL) return res.status(500).json({ ok: false });
+  if (!process.env.ISRAEL_DATABASE_URL || process.env.ISRAEL_DATABASE_URL === process.env.DATABASE_URL) return res.status(500).json({ ok: false });
   try {
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = neon(process.env.ISRAEL_DATABASE_URL);
     const columns = await sql`
       SELECT table_name, column_name, data_type
       FROM information_schema.columns
