@@ -13,7 +13,7 @@ This repository currently contains two product variants. Keep their public URLs,
 
 1. Review the `israel` branch against subsequent US changes and maintain it independently. Preserve the Hebrew UI and `lang="he" dir="rtl"` while incorporating only relevant fixes.
 2. Create a separate Vercel project with its production branch set to the Israel branch. Give it a distinct, verified URL. Do not repoint the US project or the GitHub Pages root.
-3. Configure separate production database and payment credentials for Israel; check currency, legal copy, authentication, and QR URLs before inviting users.
+3. Configure a separate production database for Israel. The Hebrew candidate still includes US Stripe billing (`usd`, `Loyalty US Standard`, 4900 cents) and automatic schema changes; keep billing disabled until an Israel provider and price are implemented. Check legal copy, authentication, and QR URLs before inviting users.
 4. Test business signup, customer signup and sign in, rewards, redemption, and persistence on the Hebrew production URL. Record that URL here only after those checks pass.
 
 The English production deployment and customer data must remain isolated throughout this work.
