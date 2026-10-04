@@ -69,7 +69,8 @@ async function loadBusiness(){
   if(!r.ok||!data.business)return;
   document.getElementById('businessBox').style.display='block';
   document.getElementById('businessName').textContent='Joining '+data.business.name;
-  document.getElementById('businessRate').textContent='Your account will also be connected to this business · '+Number(data.business.loyalty_rate||0)+'% reward rate';
+  const reward=data.business.reward_setup||{};
+  document.getElementById('businessRate').textContent=reward.active===false?'Your account will also be connected to this business.':(reward.message||('Your account will also be connected to this business · '+Number(data.business.loyalty_rate||0)+'% reward rate'));
  }catch(_e){}
 }
 function message(el,text,ok=false){el.className='msg '+(ok?'ok':'bad');el.textContent=text}

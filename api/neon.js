@@ -154,8 +154,8 @@ export default async function handler(req, res) {
       const session=await customerSession(db,req,p.access_token);
       if (!session) return res.status(401).json({error:'Customer session expired. Please sign in again.'});
       const account=session.account;
-      const businesses=await db`SELECT c.id customer_id,b.id business_id,b.name business_name,b.loyalty_rate,w.balance,w.updated_at
-        FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id AND w.business_id=c.business_id JOIN loyalty_businesses b ON b.id=c.business_id
+      const businesses=await db`SELECT c.id customer_id,b.id business_id,b.name business_name,b.loyalty_rate,w.balance,w.updated_at,COALESCE(s.settings->'reward_setup'->>'message',b.loyalty_rate::text || '% reward rate') reward_message,COALESCE((s.settings->'reward_setup'->>'active')::boolean,true) reward_active
+        FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id AND w.business_id=c.business_id JOIN loyalty_businesses b ON b.id=c.business_id LEFT JOIN loyalty_business_settings s ON s.business_id=b.id
         WHERE c.account_id=${account.id} ORDER BY b.name`;
       const transactions=await db`SELECT t.purchase_amount,t.earned_amount,t.type,t.created_at,b.name business_name
         FROM loyalty_transactions t JOIN loyalty_customers c ON c.id=t.customer_id JOIN loyalty_businesses b ON b.id=t.business_id
@@ -186,7 +186,7 @@ export default async function handler(req, res) {
     if (action === 'public_business') {
       const businessId = Number(p.business_id || 0);
       if (!businessId) return res.status(400).json({ error: 'Business is required' });
-      const business = (await db`SELECT id,name,loyalty_rate FROM loyalty_businesses WHERE id=${businessId}`).at(0);
+      const business = (await db`SELECT b.id,b.name,b.loyalty_rate,COALESCE(s.settings->'reward_setup','{}'::jsonb) reward_setup FROM loyalty_businesses b LEFT JOIN loyalty_business_settings s ON s.business_id=b.id WHERE b.id=${businessId}`).at(0);
       if (!business) return res.status(404).json({ error: 'Business not found' });
       return res.json({ business });
     }
@@ -201,8 +201,9 @@ export default async function handler(req, res) {
     if (action === 'merchant_rpc') {
       const actor = await sessionUser(db, req, p.access_token); const businessId = requireBusiness(actor);
       const name = String(p.name || ''), payload = p.payload || {};
-      const business = (await db`SELECT id,name,loyalty_rate,qr_token FROM loyalty_businesses WHERE id=${businessId}`).at(0);
+      const business = (await db`SELECT b.id,b.name,b.loyalty_rate,b.qr_token,COALESCE(s.settings->'reward_setup','{}'::jsonb) reward_setup FROM loyalty_businesses b LEFT JOIN loyalty_business_settings s ON s.business_id=b.id WHERE b.id=${businessId}`).at(0);
       if (name.includes('business_profile')) return res.json(business);
+      if (name.includes('update_reward_setup')) { const setup={business_type:String(payload.business_type||'clothing').slice(0,40),reward_type:String(payload.reward_type||'cashback').slice(0,40),value:String(payload.value||'10%').slice(0,40),message:String(payload.message||'').trim().slice(0,180)||`${Number(business.loyalty_rate||0)}% reward rate`,active:payload.active!==false}; await db`INSERT INTO loyalty_business_settings(business_id,settings,updated_at) VALUES(${businessId},${JSON.stringify({reward_setup:setup})}::jsonb,NOW()) ON CONFLICT (business_id) DO UPDATE SET settings=jsonb_set(COALESCE(loyalty_business_settings.settings,'{}'::jsonb),'{reward_setup}',${JSON.stringify(setup)}::jsonb,true),updated_at=NOW()`; return res.json({reward_setup:setup}); }
       if (name.includes('business_dashboard')) { const row=(await db`SELECT COALESCE(SUM(purchase_amount),0) sales,COALESCE(SUM(CASE WHEN type='earn' THEN earned_amount ELSE 0 END),0) earned,COALESCE(SUM(CASE WHEN type='redeem' THEN -earned_amount ELSE 0 END),0) redeemed,COUNT(*)::int transactions,COUNT(DISTINCT customer_id)::int customers FROM loyalty_transactions WHERE business_id=${businessId} AND created_at>=CURRENT_DATE`).at(0); const balance=(await db`SELECT COALESCE(SUM(balance),0) total FROM loyalty_wallets WHERE business_id=${businessId}`).at(0); return res.json({sales_today:row.sales,earned_today:row.earned,redeemed_today:row.redeemed,transactions_today:row.transactions,customers_today:row.customers,total_balance:balance.total,total_customer_balance:balance.total}); }
       if (name.includes('business_customers')) return res.json(await db`SELECT c.id customer_id,c.name,c.phone,w.balance FROM loyalty_customers c JOIN loyalty_wallets w ON w.customer_id=c.id AND w.business_id=c.business_id WHERE c.business_id=${businessId} ORDER BY c.created_at DESC`);
       if (name.includes('business_transactions') || name.includes('loyalty_history')) { const limit=Math.min(100,Math.max(1,Number(payload.p_limit||20))); return res.json(await db`SELECT t.id transaction_id,c.name,c.phone,t.purchase_amount,t.earned_amount,t.type,t.created_at FROM loyalty_transactions t JOIN loyalty_customers c ON c.id=t.customer_id AND c.business_id=t.business_id WHERE t.business_id=${businessId} ORDER BY t.created_at DESC LIMIT ${limit}`); }
