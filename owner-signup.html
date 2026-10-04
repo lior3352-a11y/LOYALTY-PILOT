@@ -12,13 +12,13 @@
 </head>
 <body>
 <div class="app"><div class="top"><div class="brand">LOYALTY — For Business</div><div class="hello">Create your business account</div></div><div class="content"><div class="card">
-<h2>Join LOYALTY</h2><div class="small">Create your business account and start a 14-day free trial. Standard plan: $49/month after the trial.</div>
+<h2>Join LOYALTY</h2><div class="small">Create your business account and start a 30-day free trial. Standard plan: $49/month after the trial.</div>
 <label for="businessName">Business name</label><input id="businessName" autocomplete="organization" placeholder="Your business name">
 <div class="row"><div><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div><div><label for="phone">Phone</label><input id="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567"></div></div>
 <label for="password">Password</label><input id="password" type="password" autocomplete="new-password" placeholder="At least 8 characters">
 <label for="confirmPassword">Confirm password</label><input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Enter your password again">
 <label class="terms-consent"><input id="acceptTerms" type="checkbox"> <span>I have read and agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
-<button id="signupBtn" class="btn" onclick="signup()">Create business account</button>
+<button id="signupBtn" class="btn" onclick="signup()">Start 30-day free trial</button>
 <button class="btn secondary" onclick="location.href='merchant.html'">Already have an account? Sign in</button><div id="result"></div>
 </div></div></div>
 <script>
@@ -39,7 +39,7 @@ async function signup(){
   result.innerHTML='<div class="status ok"><b>Your account was created successfully.</b><br>Opening your dashboard…</div>';
   setTimeout(()=>location.href='merchant.html',700);
  }catch(e){result.innerHTML='<div class="status warn"><b>Account creation failed.</b><br>'+esc(e.message)+'</div>'}
- finally{signupBtn.disabled=false;signupBtn.textContent='Create business account'}
+ finally{signupBtn.disabled=false;signupBtn.textContent='Start 30-day free trial'}
 }
 </script>
 <script src="site-common.js"></script>

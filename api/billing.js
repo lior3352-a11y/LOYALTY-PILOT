@@ -26,7 +26,7 @@ async function ensureBilling(sql) {
   await sql`CREATE INDEX IF NOT EXISTS loyalty_payment_history_business_idx ON loyalty_payment_history(business_id, created_at DESC)`;
 }
 async function createTrial(sql, id) {
-  return (await sql`INSERT INTO loyalty_subscriptions(business_id,trial_start,trial_end,subscription_status) VALUES(${id},NOW(),NOW()+INTERVAL '14 days','trialing') ON CONFLICT (business_id) DO UPDATE SET subscription_status=CASE WHEN loyalty_subscriptions.subscription_status='trialing' AND loyalty_subscriptions.trial_end<NOW() THEN 'expired' ELSE loyalty_subscriptions.subscription_status END,updated_at=NOW() RETURNING *`).at(0);
+  return (await sql`INSERT INTO loyalty_subscriptions(business_id,trial_start,trial_end,subscription_status) VALUES(${id},NOW(),NOW()+INTERVAL '30 days','trialing') ON CONFLICT (business_id) DO UPDATE SET subscription_status=CASE WHEN loyalty_subscriptions.subscription_status='trialing' AND loyalty_subscriptions.trial_end<NOW() THEN 'expired' ELSE loyalty_subscriptions.subscription_status END,updated_at=NOW() RETURNING *`).at(0);
 }
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
