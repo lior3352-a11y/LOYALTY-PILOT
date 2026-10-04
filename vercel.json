@@ -10,6 +10,10 @@
     { "src": "sw.js", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel.html" },
+    { "src": "/index.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel.html" },
+    { "src": "/", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel.html" },
+    { "src": "/index.html", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel.html" },
     { "src": "/api/health", "dest": "/api/health.js" },
     { "src": "/api/db-info", "dest": "/api/db-info.js" },
     { "src": "/api/neon", "dest": "/api/neon.js" },
