@@ -89,7 +89,7 @@ export default async function handler(req, res) {
       if ((await db`SELECT 1 FROM loyalty_users WHERE email=${email}`).length) return res.status(409).json({ error: 'An account with this email already exists' });
       const business = (await db`INSERT INTO loyalty_businesses(name,phone,qr_token) VALUES(${name},${phone || null},${randomUUID()}) RETURNING id,name,phone,loyalty_rate,qr_token`).at(0);
       await db`INSERT INTO loyalty_business_settings(business_id) VALUES(${business.id})`;
-      await db`INSERT INTO loyalty_subscriptions(business_id,trial_start,trial_end,subscription_status) VALUES(${business.id},NOW(),NOW()+INTERVAL '14 days','trialing')`;
+      await db`INSERT INTO loyalty_subscriptions(business_id,trial_start,trial_end,subscription_status) VALUES(${business.id},NOW(),NOW()+INTERVAL '30 days','trialing')`;
       const user = (await db`INSERT INTO loyalty_users(email,password_hash,role,business_id,terms_accepted_at,terms_version) VALUES(${email},${hashPassword(password)},'owner',${business.id},NOW(),'2026-09-17') RETURNING id,email,role,business_id,terms_accepted_at,terms_version`).at(0);
       const token = randomUUID(); await db`INSERT INTO loyalty_sessions(token,user_id,expires_at) VALUES(${token},${user.id},NOW()+INTERVAL '30 days')`;
       return res.status(201).json({ token, access_token: token, user, business });

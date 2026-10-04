@@ -13,7 +13,7 @@ The `israel` branch is the Hebrew candidate. Do not use the US Vercel project or
 
 1. Create a separate Neon project/database for Israel and configure **only** its URL as `ISRAEL_DATABASE_URL` in a separate Vercel project.
 2. Review automatic schema setup against the new, empty database. Never run it against the US database.
-3. Replace the English `terms.html` and `accessibility.html` with reviewed Israel-specific Hebrew pages; add a Hebrew privacy policy. The business sign-up currently links to US terms and must not be advertised yet.
+3. Review the Hebrew `terms.html`, `privacy.html`, and `accessibility.html` with qualified Israeli counsel before paid commercial use.
 4. Set an Israeli payment provider and approved ILS pricing before enabling billing. Stripe billing remains disabled.
 5. Test sign-up, authentication, QR, rewards, redemption, and persistence on the separate preview URL.
 6. Connect the Vercel-owned `loyaltyapp.app` domain only after the checks above pass.

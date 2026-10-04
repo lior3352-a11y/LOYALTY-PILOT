@@ -12,13 +12,13 @@
 <link rel="stylesheet" href="accessibility.css"></head>
 <body>
 <div class="app"><div class="top"><div class="brand">LOYALTY — לעסקים</div><div class="hello">פתיחת חשבון לעסק</div></div><div class="content"><div class="card">
-<h2>מצטרפים ל־LOYALTY</h2><div class="small">פתחו חשבון עסקי והתחילו תקופת ניסיון של 14 יום.</div>
+<h2>מצטרפים ל־LOYALTY</h2><div class="small">פתחו חשבון עסקי והתחילו תקופת ניסיון של 30 יום. חיוב יופעל רק לאחר אישור תשלום נפרד.</div>
 <label>שם העסק</label><input id="businessName" autocomplete="organization" placeholder="שם העסק שלך">
 <div class="row"><div><label>אימייל</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com" dir="ltr"></div><div><label>טלפון</label><input id="phone" type="tel" autocomplete="tel" placeholder="050-1234567" dir="ltr"></div></div>
 <label>סיסמה</label><input id="password" type="password" autocomplete="new-password" placeholder="לפחות 8 תווים">
 <label>אימות סיסמה</label><input id="confirmPassword" type="password" autocomplete="new-password" placeholder="הקלידו את הסיסמה שוב">
-<label class="terms-consent"><input id="acceptTerms" type="checkbox"> <span>קראתי ואני מסכים/ה ל<a href="terms.html" target="_blank" rel="noopener">תנאי השימוש</a>.</span></label>
-<button id="signupBtn" class="btn" onclick="signup()">פתיחת חשבון עסקי</button>
+<label class="terms-consent"><input id="acceptTerms" type="checkbox"> <span>קראתי ואני מסכים/ה ל<a href="terms.html" target="_blank" rel="noopener">תנאי השימוש</a> ול<a href="privacy.html" target="_blank" rel="noopener">מדיניות הפרטיות</a>.</span></label>
+<button id="signupBtn" class="btn" onclick="signup()">התחלת ניסיון ל־30 יום</button>
 <button class="btn secondary" onclick="location.href='merchant.html'">כבר יש לך חשבון? כניסה</button><div id="result"></div>
 </div></div></div>
 <script>
@@ -39,7 +39,7 @@ async function signup(){
   result.innerHTML='<div class="status ok"><b>החשבון נפתח בהצלחה.</b><br>מעבירים אותך ללוח הבקרה…</div>';
   setTimeout(()=>location.href='merchant.html',700);
  }catch(e){result.innerHTML='<div class="status warn"><b>פתיחת החשבון נכשלה.</b><br>'+esc(e.message)+'</div>'}
- finally{signupBtn.disabled=false;signupBtn.textContent='פתיחת חשבון עסקי'}
+ finally{signupBtn.disabled=false;signupBtn.textContent='התחלת ניסיון ל־30 יום'}
 }
 </script>
 <script src="site-common.js"></script></body></html>
