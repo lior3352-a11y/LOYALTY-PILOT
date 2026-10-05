@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     if (action === 'customers') {
       const search = `%${String(q || '').trim().toLowerCase()}%`;
       const maxRows = Math.min(500, Math.max(1, Number(limit) || 200));
-      const rows = await db`
+      const accountRows = await db`
         SELECT
           a.id AS account_id,
           a.first_name,
@@ -88,6 +88,43 @@ export default async function handler(req, res) {
         ORDER BY a.created_at DESC
         LIMIT ${maxRows}
       `;
+      const legacyRows = await db`
+        SELECT
+          NULL AS account_id,
+          c.name AS first_name,
+          '' AS last_name,
+          c.phone,
+          NULL AS email,
+          NULL AS city,
+          NULL AS state,
+          NULL AS postal_code,
+          c.created_at AS account_created_at,
+          1::int AS business_count,
+          COALESCE(w.balance, 0) AS total_balance,
+          MAX(t.created_at) AS last_activity_at,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                'business_id', b.id,
+                'business_name', b.name,
+                'balance', w.balance
+              )
+            ) FILTER (WHERE b.id IS NOT NULL),
+            '[]'::json
+          ) AS businesses
+        FROM loyalty_customers c
+        LEFT JOIN loyalty_businesses b ON b.id = c.business_id
+        LEFT JOIN loyalty_wallets w ON w.customer_id = c.id AND w.business_id = c.business_id
+        LEFT JOIN loyalty_transactions t ON t.customer_id = c.id AND t.business_id = c.business_id
+        WHERE c.account_id IS NULL
+          AND (${String(q || '').trim() === ''} OR lower(c.name || ' ' || c.phone || ' ' || COALESCE(b.name, '')) LIKE ${search})
+        GROUP BY c.id, w.balance
+        ORDER BY c.created_at DESC
+        LIMIT ${maxRows}
+      `;
+      const rows = [...accountRows, ...legacyRows]
+        .sort((a, b) => new Date(b.account_created_at || 0) - new Date(a.account_created_at || 0))
+        .slice(0, maxRows);
       return res.json({ customers: rows });
     }
 
