@@ -39,236 +39,34 @@
     }
   ],
   "routes": [
-    {
-      "src": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel.html"
-    },
-    {
-      "src": "/index.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel.html"
-    },
-    {
-      "src": "/owner-signup.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-owner-signup.html"
-    },
-    {
-      "src": "/merchant.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-merchant.html"
-    },
-    {
-      "src": "/join.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-join.html"
-    },
-    {
-      "src": "/customer.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-customer.html"
-    },
-    {
-      "src": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel.html"
-    },
-    {
-      "src": "/index.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel.html"
-    },
-    {
-      "src": "/owner-signup.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-owner-signup.html"
-    },
-    {
-      "src": "/merchant.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-merchant.html"
-    },
-    {
-      "src": "/join.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-join.html"
-    },
-    {
-      "src": "/customer.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-customer.html"
-    },
-    {
-      "src": "/terms.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-terms.html"
-    },
-    {
-      "src": "/privacy.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-privacy.html"
-    },
-    {
-      "src": "/robots.txt",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-robots.txt"
-    },
-    {
-      "src": "/sitemap.xml",
-      "has": [
-        {
-          "type": "host",
-          "value": "loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-sitemap.xml"
-    },
-    {
-      "src": "/terms.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-terms.html"
-    },
-    {
-      "src": "/privacy.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-privacy.html"
-    },
-    {
-      "src": "/robots.txt",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-robots.txt"
-    },
-    {
-      "src": "/sitemap.xml",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.loyaltyapp.company"
-        }
-      ],
-      "dest": "/israel-sitemap.xml"
-    },
-    {
-      "src": "/api/health",
-      "dest": "/api/health.js"
-    },
-    {
-      "src": "/api/db-info",
-      "dest": "/api/db-info.js"
-    },
-    {
-      "src": "/api/neon",
-      "dest": "/api/neon.js"
-    },
-    {
-      "src": "/api/billing",
-      "dest": "/api/billing.js"
-    },
-    {
-      "src": "/api/stripe-webhook",
-      "dest": "/api/stripe-webhook.js"
-    },
-    {
-      "src": "/api/supabase-proxy",
-      "dest": "/api/supabase-proxy.js"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel.html" },
+    { "src": "/index.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel.html" },
+    { "src": "/owner-signup.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel-owner-signup.html" },
+    { "src": "/merchant.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel-merchant.html" },
+    { "src": "/join.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel-join.html" },
+    { "src": "/customer.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel-customer.html" },
+    { "src": "/", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel.html" },
+    { "src": "/index.html", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel.html" },
+    { "src": "/owner-signup.html", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel-owner-signup.html" },
+    { "src": "/merchant.html", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel-merchant.html" },
+    { "src": "/join.html", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel-join.html" },
+    { "src": "/customer.html", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel-customer.html" },
+    { "src": "/terms.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel-terms.html" },
+    { "src": "/privacy.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel-privacy.html" },
+    { "src": "/robots.txt", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel-robots.txt" },
+    { "src": "/sitemap.xml", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel-sitemap.xml" },
+    { "src": "/terms.html", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel-terms.html" },
+    { "src": "/privacy.html", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel-privacy.html" },
+    { "src": "/robots.txt", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel-robots.txt" },
+    { "src": "/sitemap.xml", "has": [{ "type": "host", "value": "www.loyaltyapp.company" }], "dest": "/israel-sitemap.xml" },
+    { "src": "/api/health", "dest": "/api/health.js" },
+    { "src": "/api/db-info", "dest": "/api/db-info.js" },
+    { "src": "/api/neon", "dest": "/api/neon.js" },
+    { "src": "/api/crm", "dest": "/api/crm.js" },
+    { "src": "/api/billing", "dest": "/api/billing.js" },
+    { "src": "/api/stripe-webhook", "dest": "/api/stripe-webhook.js" },
+    { "src": "/api/supabase-proxy", "dest": "/api/supabase-proxy.js" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
