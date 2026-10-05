@@ -65,6 +65,8 @@ export default async function handler(req, res) {
           a.state,
           a.postal_code,
           a.created_at AS account_created_at,
+          (array_agg(b.name ORDER BY c.created_at ASC) FILTER (WHERE b.id IS NOT NULL))[1] AS source_business_name,
+          MIN(c.created_at) AS source_joined_at,
           COUNT(DISTINCT c.business_id)::int AS business_count,
           COALESCE(SUM(w.balance), 0) AS total_balance,
           MAX(t.created_at) AS last_activity_at,
@@ -99,6 +101,8 @@ export default async function handler(req, res) {
           NULL AS state,
           NULL AS postal_code,
           c.created_at AS account_created_at,
+          b.name AS source_business_name,
+          c.created_at AS source_joined_at,
           1::int AS business_count,
           COALESCE(w.balance, 0) AS total_balance,
           MAX(t.created_at) AS last_activity_at,
@@ -118,7 +122,7 @@ export default async function handler(req, res) {
         LEFT JOIN loyalty_transactions t ON t.customer_id = c.id AND t.business_id = c.business_id
         WHERE c.account_id IS NULL
           AND (${String(q || '').trim() === ''} OR lower(c.name || ' ' || c.phone || ' ' || COALESCE(b.name, '')) LIKE ${search})
-        GROUP BY c.id, w.balance
+        GROUP BY c.id, b.name, w.balance
         ORDER BY c.created_at DESC
         LIMIT ${maxRows}
       `;
