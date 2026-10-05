@@ -2,11 +2,20 @@ import { requestGuard, schema, customerAction, issueSetup, redeem, rateLimit } f
 import { neon } from '@neondatabase/serverless';
 import { randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 
-const sql = () => {
-  if (!process.env.ISRAEL_DATABASE_URL) throw new Error('ISRAEL_DATABASE_URL is not configured');
-  if (process.env.ISRAEL_DATABASE_URL === process.env.DATABASE_URL) throw new Error('Israel and US databases must differ');
-  return neon(process.env.ISRAEL_DATABASE_URL);
+const ISRAEL_SCHEMA = 'loyalty_israel';
+const withIsraelSchema = value => {
+  const url = new URL(value);
+  const existing = url.searchParams.get('options');
+  const schemaOption = '-c search_path=' + ISRAEL_SCHEMA;
+  url.searchParams.set('options', existing ? existing + ' ' + schemaOption : schemaOption);
+  return url.toString();
 };
+const israelDatabaseUrl = () => {
+  if (process.env.ISRAEL_DATABASE_URL && process.env.ISRAEL_DATABASE_URL !== process.env.DATABASE_URL) return process.env.ISRAEL_DATABASE_URL;
+  if (process.env.DATABASE_URL) return withIsraelSchema(process.env.DATABASE_URL);
+  throw new Error('Israel database is not configured');
+};
+const sql = () => neon(israelDatabaseUrl());
 const hashPassword = (password, salt = randomUUID()) => `${salt}:${scryptSync(password, salt, 32).toString('hex')}`;
 const verifyPassword = (password, stored) => {
   const [salt, hash] = String(stored || '').split(':');
@@ -17,6 +26,7 @@ const verifyPassword = (password, stored) => {
 };
 
 async function ensureSchema(db) {
+  await db`CREATE SCHEMA IF NOT EXISTS loyalty_israel`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_businesses (id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, loyalty_rate NUMERIC(6,2) NOT NULL DEFAULT 10, qr_token TEXT NOT NULL UNIQUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await db`ALTER TABLE loyalty_businesses ADD COLUMN IF NOT EXISTS phone TEXT`;
   await db`CREATE TABLE IF NOT EXISTS loyalty_customers (id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, phone TEXT NOT NULL, wallet_token TEXT NOT NULL UNIQUE, business_id BIGINT REFERENCES loyalty_businesses(id) ON DELETE CASCADE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
