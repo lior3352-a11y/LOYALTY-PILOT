@@ -1,7 +1,7 @@
 const isHebrew = document.documentElement.lang === 'he';
 const words = (he, en) => isHebrew ? he : en;
 const params = new URLSearchParams(location.search);
-const businessId = Number(params.get('business_id') || localStorage.getItem('loyalty_business_id') || 0);
+let businessId = Number(params.get('business_id') || localStorage.getItem('loyalty_business_id') || 0);
 const setupToken = new URLSearchParams(location.hash.slice(1)).get('setup');
 let mode = setupToken ? 'setup' : params.get('mode') === 'login' ? 'login' : 'register';
 let businessReady = false;
@@ -41,14 +41,62 @@ async function submitCustomer() {
   } finally { showMode(); }
 }
 document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter' && !btn.disabled) submitCustomer(); });
-showMode();
-(async () => {
+function setBusiness(business) {
+  businessId = Number(business.id);
+  document.getElementById('businessName').textContent = business.name;
+  document.getElementById('rewardRate').textContent = Number(business.loyalty_rate) + '%';
+  localStorage.setItem('loyalty_business_id', String(businessId));
+  history.replaceState(null, '', location.pathname + '?business_id=' + businessId);
+  businessReady = true;
+  msg.className = '';
+  msg.textContent = '';
+  showMode();
+}
+async function loadBusiness() {
   if (mode === 'setup') { document.getElementById('businessName').textContent = words('הגדרת סיסמה', 'Set your password'); return; }
-  if (!businessId) { msg.className = 'msg bad'; msg.textContent = words('לכניסה, סרקו את קוד ה־QR של העסק.', 'Scan your business QR code to sign in.'); return; }
+  const picker = document.getElementById('businessPicker');
+  const select = document.getElementById('businessSelect');
+  if (businessId) {
+    try {
+      const data = await api({action:'public_business',business_id:businessId});
+      if (picker) picker.hidden = true;
+      setBusiness(data.business);
+    } catch {
+      businessReady = false;
+      msg.className = 'msg bad';
+      msg.textContent = words('פרטי העסק אינם זמינים כרגע.', 'Business details are currently unavailable.');
+      showMode();
+    }
+    return;
+  }
+  if (picker) picker.hidden = false;
   try {
-    const data = await api({action:'public_business',business_id:businessId});
-    document.getElementById('businessName').textContent = data.business.name;
-    document.getElementById('rewardRate').textContent = Number(data.business.loyalty_rate) + '%';
-    businessReady = true; showMode();
-  } catch { msg.textContent = words('פרטי העסק אינם זמינים כרגע.', 'Business details are currently unavailable.'); }
-})();
+    const data = await api({action:'public_businesses'});
+    const businesses = Array.isArray(data.businesses) ? data.businesses : [];
+    if (!businesses.length) {
+      if (select) select.innerHTML = '<option value="">עדיין אין עסקים זמינים</option>';
+      msg.className = 'msg bad';
+      msg.textContent = words('כרגע אין עסק פתוח להצטרפות. בעל עסק צריך לפתוח חשבון קודם.', 'No business is available to join yet.');
+      showMode();
+      return;
+    }
+    if (select) {
+      select.innerHTML = '<option value="">בחרו עסק להצטרפות</option>' + businesses.map(b => '<option value="' + b.id + '">' + b.name + ' - ' + Number(b.loyalty_rate) + '% צבירה</option>').join('');
+      select.addEventListener('change', () => {
+        const selected = businesses.find(b => String(b.id) === select.value);
+        if (selected) setBusiness(selected);
+      });
+    }
+    document.getElementById('businessName').textContent = words('בחרו עסק להצטרפות', 'Choose a business to join');
+    document.getElementById('rewardRate').textContent = '--%';
+    msg.className = 'msg bad';
+    msg.textContent = words('בחרו עסק מהרשימה ואז מלאו את הפרטים.', 'Choose a business, then enter your details.');
+    showMode();
+  } catch {
+    msg.className = 'msg bad';
+    msg.textContent = words('לא ניתן לטעון את רשימת העסקים כרגע.', 'The business list is not available right now.');
+    showMode();
+  }
+}
+showMode();
+loadBusiness();
