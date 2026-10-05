@@ -94,6 +94,10 @@ export default async function handler(req, res) {
       const token = randomUUID(); await db`INSERT INTO loyalty_sessions(token,user_id,expires_at) VALUES(${token},${user.id},NOW()+INTERVAL '30 days')`;
       return res.status(201).json({ token, access_token: token, user, business });
     }
+    if (action === 'public_businesses') {
+      const businesses = await db`SELECT id,name,loyalty_rate FROM loyalty_businesses ORDER BY created_at DESC LIMIT 50`;
+      return res.json({ businesses });
+    }
     if (action === 'public_business') {
       const businessId = Number(p.business_id || 0);
       if (!businessId) return res.status(400).json({ error: 'Business is required' });
