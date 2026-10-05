@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#0e1b2b" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light" />
     <title>LOYALTY — ניהול העסק</title>
     <style>
       :root {
@@ -32,8 +33,10 @@
         background: #f7f9fc;
       }
       .top {
-        background: linear-gradient(135deg, var(--navy), var(--navy2));
-        color: #fff;
+        background: #fff;
+        color: var(--text);
+        border-bottom: 1px solid var(--line);
+        box-shadow: 0 10px 28px rgba(20, 33, 61, 0.06);
         padding: 26px 24px;
         border-radius: 0 0 26px 26px;
       }
@@ -43,7 +46,7 @@
       }
       .hello {
         margin-top: 10px;
-        color: #dbe6f2;
+        color: var(--muted);
       }
       .content {
         padding: 20px;
