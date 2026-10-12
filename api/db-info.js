@@ -1,17 +1,10 @@
 import { neon } from '@neondatabase/serverless';
 
-const ISRAEL_SCHEMA = 'loyalty_israel';
-const withIsraelSchema = value => {
-  const url = new URL(value);
-  const existing = url.searchParams.get('options');
-  const schemaOption = '-c search_path=' + ISRAEL_SCHEMA;
-  url.searchParams.set('options', existing ? existing + ' ' + schemaOption : schemaOption);
-  return url.toString();
-};
+// Read metadata only from the dedicated Israel database.
 const israelDatabaseUrl = () => {
-  if (process.env.ISRAEL_DATABASE_URL && process.env.ISRAEL_DATABASE_URL !== process.env.DATABASE_URL) return process.env.ISRAEL_DATABASE_URL;
-  if (process.env.DATABASE_URL) return withIsraelSchema(process.env.DATABASE_URL);
-  return null;
+  const dedicatedUrl = process.env.ISRAEL_DATABASE_DATABASE_URL || process.env.ISRAEL_DATABASE_URL;
+  if (!dedicatedUrl || dedicatedUrl === process.env.DATABASE_URL) return null;
+  return dedicatedUrl;
 };
 
 export default async function handler(req, res) {
@@ -24,7 +17,7 @@ export default async function handler(req, res) {
     const columns = await sql`
       SELECT table_schema, table_name, column_name, data_type
       FROM information_schema.columns
-      WHERE table_schema = 'loyalty_israel'
+      WHERE table_schema = current_schema()
       ORDER BY table_name, ordinal_position
     `;
     return res.status(200).json({ ok: true, columns });
