@@ -6,9 +6,6 @@ const israelDatabaseUrl = () => {
   if (!dedicatedUrl || dedicatedUrl === process.env.DATABASE_URL) return null;
   return { url: dedicatedUrl, mode: 'dedicated' };
 };
-  if (process.env.DATABASE_URL) return { url: withIsraelSchema(process.env.DATABASE_URL), mode: 'schema' };
-  return null;
-};
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
