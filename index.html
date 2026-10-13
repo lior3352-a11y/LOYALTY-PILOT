@@ -58,6 +58,29 @@ footer{padding:26px 0 38px}.foot{display:flex;justify-content:space-between;flex
 @media(max-width:1050px){.nav-links{display:none}.hero-grid{grid-template-columns:1fr;gap:30px}.hero-media{min-height:400px;max-width:690px;margin:auto;width:100%}.promo{height:450px}.business-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.wrap{width:calc(100% - 30px)}.nav{min-height:69px}.logo{font-size:22px;gap:6px}.giftlogo{height:36px;width:36px}.tagline{font-size:10px;letter-spacing:1px;margin-left:42px}.nav-actions .button.white{display:none}.nav-actions .button{font-size:12px;padding:8px 10px;min-height:36px}.hero{padding:38px 0 43px}h1{font-size:47px;letter-spacing:-1.6px}.lead{font-size:18px}.features{grid-template-columns:1fr 1fr;gap:12px 6px}.feature{font-size:15px;gap:7px}.dot{width:42px;height:42px;font-size:21px}.hero-media{min-height:360px}.promo{height:350px}.promo-sticker{right:0;bottom:3px;padding:14px 15px;font-size:16px}.promo-sticker big{font-size:26px}.promo-sticker em{font-size:13px}.actions .button{width:100%}.steps{padding:54px 0}.step-grid{grid-template-columns:1fr}.step{padding:19px}.section-heading{font-size:34px}.business{padding:50px 0}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.button{transition:none}}
+
+/* Readability fix: give every light section an explicit background and ink.
+   Headings previously inherited a pale foreground when the browser switched
+   transparent sections to its dark rendering theme. */
+html,body,main{color-scheme:only light}
+main{background:#fff!important;color:#071943!important}
+.steps{background:#fff!important;color:#071943!important}
+.steps .section-heading,
+.steps .section-heading:not(strong){color:#071943!important}
+.steps .step{background:#fff!important;color:#071943!important;border-color:#dbe5f5!important}
+.steps .step b,.steps .step h3{color:#071943!important}
+.steps .step p{color:#1e3153!important}
+.steps .section-label,.business .section-label{color:#034cbd!important}
+.business{background:#f0f6ff!important;color:#071943!important}
+.business .section-heading{color:#071943!important}
+.business .section-heading strong,
+.steps .section-heading strong{color:#005cf0!important}
+.business p{color:#1e3153!important}
+.business .offer{background:#fff!important;color:#071943!important}
+.business .offer .price{color:#173367!important}
+footer{background:#fff!important;color:#263657!important}
+footer .foot,footer .foot a,footer .foot span{color:#263657!important}
+
 </style>
 </head>
 <body>
