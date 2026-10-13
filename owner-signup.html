@@ -33,6 +33,19 @@ input:focus{border-color:#0567fa;outline:3px solid #dbeafe;outline-offset:1px}
 .status{line-height:1.5}
 @media(max-width:600px){.app{padding:0 12px 30px}.top{padding:25px 20px 26px}.content{padding:16px 0}.card{padding:24px 18px}.trial-strip{font-size:14px}.page-subtitle{font-size:15px}}
 
+
+/* US business signup: make the full registration screen readable in dark-mode browsers. */
+:root{color-scheme:light!important}
+html,body{background:#ffffff!important;color:#071943!important;color-scheme:light!important}
+body .app,body .content,body .top,body .card{background:#ffffff!important;color:#071943!important}
+body .top{border-top:6px solid #0567fa!important}
+body .brand,body .page-headline,body .card h2,body label{color:#071943!important}
+body .hello,body .page-subtitle,body .small{color:#344764!important}
+body input:not([type="checkbox"]){background:#ffffff!important;color:#071943!important;border:1.5px solid #a6bdd9!important;color-scheme:light!important}
+body input::placeholder{color:#50627d!important;opacity:1}
+body .terms-consent,body .terms-consent span{color:#233b5a!important}
+body .btn:not(.secondary){background:#0567fa!important;color:#ffffff!important}
+
 </style>
 <link rel="stylesheet" href="accessibility.css">
 </head>
