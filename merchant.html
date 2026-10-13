@@ -29,6 +29,18 @@ input:focus,select:focus,textarea:focus{border-color:#0567fa;outline:3px solid #
 .qr img{border-color:#0567fa}
 @media(max-width:600px){.top{padding:24px 16px}.brand{font-size:25px}.brand-subtitle{font-size:10px}.content{padding:14px}.card{padding:19px}}
 
+
+/* US merchant login: force a light, high-contrast form even with dark appearance enabled. */
+:root{color-scheme:light!important}
+html,body{background:#ffffff!important;color:#071943!important;color-scheme:light!important}
+body .app,body .content,body .top,body .card{background:#ffffff!important;color:#071943!important}
+body .top{border-top:6px solid #0567fa!important}
+body .brand,body .card h2,body label{color:#071943!important}
+body .hello,body .small{color:#344764!important}
+body input:not([type="checkbox"]),body select,body textarea{background:#ffffff!important;color:#071943!important;border-color:#a6bdd9!important;color-scheme:light!important}
+body input::placeholder,body textarea::placeholder{color:#50627d!important;opacity:1}
+body .btn:not(.secondary):not(.gold){background:#0567fa!important;color:#ffffff!important}
+
 </style>
 <link rel="stylesheet" href="accessibility.css">
 </head>
