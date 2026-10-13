@@ -38,6 +38,21 @@ input:focus{border-color:#0567fa;box-shadow:0 0 0 4px #dbeafe;outline:none}
 .note{font-size:14px;color:#344764}.security{background:#edf5ff;color:#263d62;border:1px solid #dbe7f9;font-size:13px}
 @media(max-width:520px){.app{padding:23px 13px 34px}.hero{padding:25px 16px}.card{padding:23px 17px}.join-badge{font-size:13px}.subtitle{font-size:11px}.tab{font-size:15px}}
 
+
+/* US registration contrast fix (all color schemes): keep customer forms white and readable. */
+:root{color-scheme:light!important}
+html,body{background:#ffffff!important;color:#071943!important;color-scheme:light!important}
+body .app{background:#ffffff!important;color:#071943!important}
+body .card,body .hero{background:#ffffff!important;color:#071943!important}
+body .card h1,body .card h2,body .hero h1,body .brand,body label{color:#071943!important}
+body .hero p,body .subtitle,body .note,body .security{color:#344764!important}
+body input:not([type="checkbox"]){background:#ffffff!important;color:#071943!important;border-color:#a6bdd9!important;color-scheme:light!important}
+body input::placeholder{color:#50627d!important;opacity:1}
+body .tab{background:#ffffff!important;color:#071943!important}
+body .tab.active{background:#eaf3ff!important;color:#074aaf!important}
+body .check{color:#253e60!important}
+body .primary{background:#0567fa!important;color:#fff!important}
+
 </style>
 <link rel="stylesheet" href="accessibility.css"></head>
 <body>
