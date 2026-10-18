@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS public.loyalty_admin_recovery (user_id BIGINT PRIMARY KEY REFERENCES public.loyalty_users(id) ON DELETE CASCADE, token_hash TEXT UNIQUE NOT NULL, expires_at TIMESTAMPTZ NOT NULL);
