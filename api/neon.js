@@ -2,18 +2,14 @@ import { requestGuard, schema, customerAction, issueSetup, redeem, rateLimit } f
 import { neon } from '@neondatabase/serverless';
 import { randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 
-const ISRAEL_SCHEMA = 'loyalty_israel';
-const withIsraelSchema = value => {
-  const url = new URL(value);
-  const existing = url.searchParams.get('options');
-  const schemaOption = '-c search_path=' + ISRAEL_SCHEMA;
-  url.searchParams.set('options', existing ? existing + ' ' + schemaOption : schemaOption);
-  return url.toString();
-};
+// The Israel Vercel/Neon integration provides the dedicated database URL
+// with a project-specific prefix. Never fall back to the shared US database.
 const israelDatabaseUrl = () => {
-  if (process.env.ISRAEL_DATABASE_URL && process.env.ISRAEL_DATABASE_URL !== process.env.DATABASE_URL) return process.env.ISRAEL_DATABASE_URL;
-  if (process.env.DATABASE_URL) return withIsraelSchema(process.env.DATABASE_URL);
-  throw new Error('Israel database is not configured');
+  const dedicatedUrl = process.env.ISRAEL_DATABASE_DATABASE_URL || process.env.ISRAEL_DATABASE_URL;
+  if (!dedicatedUrl || dedicatedUrl === process.env.DATABASE_URL) {
+    throw new Error('Dedicated Israel database is not configured');
+  }
+  return dedicatedUrl;
 };
 const sql = () => neon(israelDatabaseUrl());
 const hashPassword = (password, salt = randomUUID()) => `${salt}:${scryptSync(password, salt, 32).toString('hex')}`;
