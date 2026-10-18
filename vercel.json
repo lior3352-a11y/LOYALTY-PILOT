@@ -10,6 +10,7 @@
     { "src": "sw.js", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/api/admin", "dest": "/api/admin.js" },
     { "src": "/api/health", "dest": "/api/health.js" },
     { "src": "/api/db-info", "dest": "/api/db-info.js" },
     { "src": "/api/neon", "dest": "/api/neon.js" },
