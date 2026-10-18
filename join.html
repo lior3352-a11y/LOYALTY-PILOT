@@ -12,12 +12,39 @@
 <title>Create your LOYALTY account</title>
 <style>
 :root{--ink:#151515;--muted:#747474;--gold:#c89a3d;--bg:#f7f7f7;--line:#e6e6e6;--green:#0b7a53;--red:#9b2c2c}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#fff;color:var(--ink)}.app{max-width:560px;margin:auto;min-height:100vh;padding:28px 18px 42px}.brand{text-align:center;font-size:31px;font-weight:900;letter-spacing:2px}.dot{color:var(--gold)}.subtitle{text-align:center;color:var(--muted);font-size:14px;margin-top:5px}.hero{margin:24px 0 18px;text-align:center}.hero h1{font-size:31px;line-height:1.15;margin:0 0 10px}.hero p{margin:0;color:var(--muted);font-size:15px}.business{display:none;margin:18px 0;background:#fffaf0;border:1px solid #ead8a7;border-radius:18px;padding:14px 16px}.business strong{display:block}.business span{font-size:13px;color:var(--muted)}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 12px}.tab{border:1px solid var(--line);background:#fff;color:var(--ink);padding:12px;border-radius:13px;font-weight:900;cursor:pointer}.tab.active{background:#fff;color:#8a6417;border-color:var(--gold);box-shadow:0 0 0 2px rgba(200,154,61,.10)}.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 14px 35px rgba(0,0,0,.06)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{display:block;font-weight:800;margin:12px 2px 7px;font-size:14px}input{width:100%;padding:14px 15px;border:1px solid #d9d9d9;border-radius:14px;font-size:16px;background:#fcfcfc;outline:none}input:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(200,154,61,.12);background:white}.check{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:13px;color:#555}.check input{width:auto;margin-top:2px}.primary{width:100%;margin-top:18px;padding:15px;border:1px solid var(--gold);border-radius:15px;background:#fff;color:#171717;font-weight:900;font-size:17px;cursor:pointer;box-shadow:0 8px 20px rgba(200,154,61,.10)}.primary:disabled{opacity:.55;cursor:default}.msg{margin-top:14px;padding:12px 13px;border-radius:12px;font-size:14px}.ok{background:#eaf8f1;color:#086b42;border:1px solid #bce6d2}.bad{background:#fff0f0;color:var(--red);border:1px solid #efc8c8}.note{text-align:center;color:var(--muted);font-size:12px;margin-top:13px}.hidden{display:none}.security{margin-top:16px;background:#f7f7f7;border-radius:14px;padding:12px 13px;color:#555;font-size:12px;line-height:1.45}@media(max-width:520px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+
+/* Loyalty US customer join/login – match the vivid blue campaign homepage */
+:root{color-scheme:light;--ink:#071943;--muted:#344764;--gold:#0567fa;--bg:#f4f8ff;--line:#d7e5f7;--green:#087a4b}
+html{background:#fff}body{background:linear-gradient(137deg,#ffffff,#eff6ff 62%,#ffffff);color:#071943}
+.app{max-width:720px;padding:31px 18px 50px}
+.brand{color:#071943;font-size:clamp(28px,5vw,39px);letter-spacing:-1.1px;text-align:center}
+.dot{color:#0567fa}
+.subtitle{color:#034cbd;font-size:12px;font-weight:900;letter-spacing:2px;margin-top:6px}
+.join-badge{margin:24px auto 0;border-radius:50px;padding:12px 18px;text-align:center;background:#e4f2ff;border:1px solid #c9e2ff;color:#0b4ba3;font-weight:800;font-size:14px;line-height:1.4;max-width:650px}
+.hero{background:linear-gradient(125deg,#fff 10%,#e5f1ff 100%);border:1px solid #dbe7f9;border-radius:25px;padding:28px 20px;margin:19px 0 22px;box-shadow:0 14px 40px #173d7512}
+.hero h1{font-size:clamp(30px,5vw,42px);letter-spacing:-1px;line-height:1.08;margin:0 0 12px;color:#071943}
+.hero p{font-size:17px;color:#263d62;line-height:1.5}
+.business{border:1px solid #c8dcf9;background:#edf5ff}
+.tabs{gap:11px;margin:20px 0 15px}
+.tab{padding:15px 12px;border:1.5px solid #bad3f3;border-radius:14px;font-size:16px;color:#164378;background:#fff}
+.tab.active{color:#fff;background:#0567fa;border-color:#0567fa;box-shadow:0 9px 20px #0567fa27}
+.card{border:1px solid #dbe7f9;border-radius:24px;box-shadow:0 17px 45px #12375e15;background:#fff;padding:28px}
+label{font-size:15px;color:#071943;font-weight:800}
+input{background:#fbfdff;border:1.5px solid #b9cee9;color:#071943;padding:14px 15px}
+input:focus{border-color:#0567fa;box-shadow:0 0 0 4px #dbeafe;outline:none}
+.check{color:#243854;font-size:14px;line-height:1.5}
+.primary{background:#0567fa;color:#fff;border:2px solid #0567fa;box-shadow:0 10px 24px #0567fa36;min-height:53px}
+.primary:hover{background:#004fe0}
+.note{font-size:14px;color:#344764}.security{background:#edf5ff;color:#263d62;border:1px solid #dbe7f9;font-size:13px}
+@media(max-width:520px){.app{padding:23px 13px 34px}.hero{padding:25px 16px}.card{padding:23px 17px}.join-badge{font-size:13px}.subtitle{font-size:11px}.tab{font-size:15px}}
+
 </style>
 <link rel="stylesheet" href="accessibility.css"></head>
 <body>
 <div class="app">
-  <div class="brand">LOYALTY<span class="dot">.</span></div>
-  <div class="subtitle">Your rewards account</div>
+  <div class="brand">🎁 LOYALTY<span class="dot"> US</span></div>
+  <div class="subtitle">SCAN TO SEE WHAT YOU EARN</div>
+  <div class="join-badge">★ Collect rewards at your favorite local businesses — no app download</div>
   <div class="hero"><h1>Create your personal account</h1><p>One secure account for your details, rewards and activity. No QR is required to register.</p></div>
   <div id="businessBox" class="business"><strong id="businessName">Business</strong><span id="businessRate"></span></div>
   <div class="tabs"><button id="signupTab" class="tab active" type="button" onclick="showMode('signup')">Create account</button><button id="loginTab" class="tab" type="button" onclick="showMode('login')">Sign in</button></div>

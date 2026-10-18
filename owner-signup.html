@@ -3,15 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0e1b2b">
+<meta name="theme-color" content="#0567fa">
 <title>Create a business account — LOYALTY</title>
 <style>
 :root{--navy:#0e1b2b;--navy2:#203a5a;--gold:#d7a23a;--bg:#eef2f6;--text:#14213d;--muted:#667085;--line:#e2e7ee}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.app{max-width:720px;margin:auto;min-height:100vh;background:#f7f9fc}.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:26px 24px;border-radius:0 0 26px 26px}.brand{font-size:28px;font-weight:900}.hello{margin-top:10px;color:#dbe6f2}.content{padding:20px}.card{background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 7px 22px rgba(0,0,0,.06)}label{display:block;font-weight:800;margin:12px 0 6px}input{width:100%;padding:14px;border:1px solid #cfd7e3;border-radius:12px;font-size:18px}.btn{width:100%;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:900;background:var(--navy);color:#fff;cursor:pointer;margin-top:14px}.btn.secondary{background:#fff;color:var(--navy);border:1px solid #cfd7e3}.btn:disabled{opacity:.6}.status{padding:12px 14px;border-radius:13px;margin-top:12px}.ok{background:#eaf8f1;color:#086b42}.warn{background:#fff6e5;color:#7a4b00}.small{font-size:13px;color:var(--muted)}.price{font-size:34px;font-weight:900;color:var(--gold);margin:6px 0}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.terms-consent{display:flex;gap:9px;align-items:flex-start;font-weight:600}.terms-consent input{width:auto;margin-top:3px}.terms-consent a{color:#8a6515}@media(max-width:520px){.row{grid-template-columns:1fr}}
+
+/* Loyalty US bright campaign design – registration UI only. */
+:root{color-scheme:light;--navy:#071943;--navy2:#102c62;--gold:#0567fa;--bg:#f4f8ff;--text:#071943;--muted:#344764;--line:#d7e5f7}
+html{background:#fff;color:var(--navy)}
+body{font-family:Arial,Helvetica,sans-serif;background:linear-gradient(140deg,#ffffff 2%,#edf5ff 68%,#ffffff 100%);color:var(--navy)}
+.app{max-width:840px;min-height:100vh;background:transparent;padding:0 16px 36px}
+.top{background:linear-gradient(132deg,#fff 6%,#e5f1ff 90%);color:var(--navy);padding:38px 38px 32px;border:1px solid #dbeaff;border-top:7px solid #0567fa;border-radius:0 0 26px 26px;box-shadow:0 22px 50px #17478512}
+.brand{font-size:clamp(25px,4vw,32px);font-weight:900;letter-spacing:-.8px;color:var(--navy)}
+.brand-us{color:#0567fa}.hello{margin-top:11px;color:#034cbd;letter-spacing:1.7px;font-size:12px;font-weight:900}
+.page-headline{font-size:clamp(32px,5vw,48px);line-height:1.05;letter-spacing:-1.4px;margin:16px 0 12px;color:var(--navy)}
+.page-subtitle{font-size:17px;line-height:1.5;color:#263d62;max-width:630px;margin:0}
+.content{padding:22px 0}.card{border:1px solid #dbe7f9;background:#fff;border-radius:24px;padding:29px 34px;box-shadow:0 16px 55px #173e7815}
+.trial-strip{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:9px;border:1px solid #bfe2d1;background:#eafbf2;color:#075e3d;font-size:16px;font-weight:900;padding:13px 16px;border-radius:14px;margin-bottom:24px}
+.trial-strip span{font-weight:700;font-size:13px;color:#075e3d}
+.card h2{font-size:28px;line-height:1.15;letter-spacing:-.5px;margin:0 0 8px;color:var(--navy)}
+.small{font-size:15px;line-height:1.5;color:#304364}.card>.small{margin-bottom:18px}
+label{font-size:15px;color:#071943;margin:16px 0 8px;font-weight:800}
+input{background:#fbfdff;border:1.5px solid #b9cee9;color:#071943;border-radius:13px;font-size:17px;min-height:52px}
+input:focus{border-color:#0567fa;outline:3px solid #dbeafe;outline-offset:1px}
+.btn{min-height:53px;background:#0567fa;color:#fff;border-radius:15px;box-shadow:0 9px 22px #0567fa33}
+.btn.secondary{border:1.5px solid #a3bee9;background:#fff;color:#0751c5;box-shadow:none}
+.btn:hover{filter:brightness(.96)}
+.terms-consent{line-height:1.5;color:#243854}.terms-consent a{color:#034cbd;text-decoration:underline}
+.status{line-height:1.5}
+@media(max-width:600px){.app{padding:0 12px 30px}.top{padding:25px 20px 26px}.content{padding:16px 0}.card{padding:24px 18px}.trial-strip{font-size:14px}.page-subtitle{font-size:15px}}
+
 </style>
 <link rel="stylesheet" href="accessibility.css">
 </head>
 <body>
-<div class="app"><div class="top"><div class="brand">LOYALTY — For Business</div><div class="hello">Create your business account</div></div><div class="content"><div class="card">
+<div class="app"><div class="top"><div class="brand">🎁 LOYALTY <span class="brand-us">US</span></div><div class="hello">YOUR CUSTOMERS. YOUR REWARDS. YOUR GROWTH.</div><h1 class="page-headline">Bring your customers back.</h1><p class="page-subtitle">Create your business loyalty program in minutes. No extra hardware or app download.</p></div><div class="content"><div class="card"><div class="trial-strip">✦ 30 DAYS FREE <span>No charge during your trial</span></div>
 <h2>Join LOYALTY</h2><div class="small">Create your business account and start a 30-day free trial. Standard plan: $49/month after the trial.</div>
 <label for="businessName">Business name</label><input id="businessName" autocomplete="organization" placeholder="Your business name">
 <div class="row"><div><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div><div><label for="phone">Phone</label><input id="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567"></div></div>
