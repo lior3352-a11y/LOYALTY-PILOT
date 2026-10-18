@@ -39,6 +39,7 @@
     }
   ],
   "routes": [
+    { "src": "/api/admin", "dest": "/api/admin.js" },
     { "src": "/", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel.html" },
     { "src": "/index.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel.html" },
     { "src": "/owner-signup.html", "has": [{ "type": "host", "value": "loyaltyapp.company" }], "dest": "/israel-owner-signup.html" },
