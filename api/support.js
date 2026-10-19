@@ -47,7 +47,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
   const host = String(req.headers.host || "").split(":")[0].toLowerCase();
   const origin = req.headers.origin ? new URL(req.headers.origin).host.toLowerCase() : host;
-  if (origin !== host || !["loyaltyusapp.com", "www.loyaltyusapp.com", "loyaltyapp.company", "www.loyaltyapp.company"].includes(host)) {
+  if (origin !== host || !["loyaltyusapp.com", "www.loyaltyusapp.com", "loyaltyapp.company", "www.loyaltyapp.company"].includes(host) && host !== process.env.VERCEL_URL) {
     return res.status(403).json({ error: "Origin not allowed" });
   }
   let body;
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
   catch { return res.status(400).json({ error: "Invalid JSON" }); }
   const message = String(body.message || "").trim();
   if (!message || message.length > 1000) return res.status(400).json({ error: "Message must be 1-1000 characters" });
-  const lang = host.includes("loyaltyapp.company") ? "he" : "en";
+  const lang = body.lang === "he" || host.includes("loyaltyapp.company") ? "he" : "en";
   const specialist = /account|charge|billing|refund|locked|missing points|points missing|חשבון|חיוב|תשלום|החזר|נעול|נקודות חסרות|נקודות שלא/.test(message.toLowerCase());
   const containsPrivateData = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|(?:\+?\d[\d ()-]{8,}\d)|\b\d{13,19}\b|\b(?:password|passcode|verification code|סיסמה|קוד אימות)\s*[:=]?\s*\S+/i.test(message);
   if (containsPrivateData) {
