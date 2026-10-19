@@ -74,3 +74,11 @@ test('zero global quota blocks provider and rejected reservations are not retrie
   const reserve=createSupportLimiter({env:{VERCEL:'1',LOYALTY_SUPPORT_RATE_SECRET:'test',LOYALTY_SUPPORT_DAILY_REQUESTS:'0'},getSql:async()=>async(strings)=>{if(strings.join('').includes('INSERT'))inserts++;return [{used:1}];}});
   assert.equal((await reserve({headers:{'x-forwarded-for':'192.0.2.2'}})).allowed,false);assert.equal(inserts,2);
 });
+test('Israel quotas use only the dedicated Israel database', async () => {
+  const { supportDatabaseUrl } = await import('../lib/support-limits.mjs');
+  const req = {headers:{host:'loyaltyapp.company'}};
+  assert.equal(supportDatabaseUrl(req,{DATABASE_URL:'us-only'}),undefined);
+  assert.equal(supportDatabaseUrl(req,{DATABASE_URL:'shared',ISRAEL_DATABASE_URL:'shared'}),undefined);
+  assert.equal(supportDatabaseUrl(req,{DATABASE_URL:'us-only',ISRAEL_DATABASE_URL:'israel-only'}),'israel-only');
+  assert.equal(supportDatabaseUrl({headers:{host:'loyaltyusapp.com'}},{DATABASE_URL:'us-only',ISRAEL_DATABASE_URL:'israel-only'}),'us-only');
+});

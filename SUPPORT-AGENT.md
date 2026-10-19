@@ -8,7 +8,7 @@ Stop cancels browser speech, microphone recognition, and the pending browser req
 
 ## Server usage limits
 
-Before each paid provider call the server reserves durable atomic PostgreSQL counters in loyalty_support_limits, using DATABASE_URL for the current project. No account, reward, or billing tables are read or changed. The counter table is created automatically on the first paid request; schema permission or store failure disables paid calls and uses verified FAQ answers instead. No in-memory counter is used for enforcement. Quotas are shared across instances using that database, including Preview and Production if they share DATABASE_URL. Use an isolated Preview database to keep their quotas separate.
+Before each paid provider call the server reserves durable atomic PostgreSQL counters in loyalty_support_limits, using DATABASE_URL for US and only ISRAEL_DATABASE_DATABASE_URL/ISRAEL_DATABASE_URL for Israel. Israel refuses a missing dedicated URL or one equal to the shared US URL. No account, reward, or billing tables are read or changed. The counter table is created automatically on the first paid request; schema permission or store failure disables paid calls and uses verified FAQ answers instead. No in-memory counter is used for enforcement. Quotas are shared across instances using that database, including Preview and Production if they share DATABASE_URL. Use an isolated Preview database to keep their quotas separate.
 
 Defaults, configurable only through server environment variables:
 
