@@ -8,10 +8,11 @@
   let lang = document.documentElement.lang.toLowerCase().startsWith("he") ? "he" : "en";
   try { const saved = localStorage.getItem("loyalty-support-language"); if (saved === "he" || saved === "en") lang = saved; } catch {}
   let t = copy[lang], recognition, listeningTimer, speechTimer, controller, pending, generation = 0;
-  const css = document.createElement("link"); css.rel = "stylesheet"; css.href = "/support-widget.css?v=2"; document.head.append(css);
+  const css = document.createElement("link"); css.rel = "stylesheet"; css.href = "/support-widget.css?v=3"; document.head.append(css);
   const host = document.createElement("div"); host.id = "loyalty-support-root";
-  host.innerHTML = `<button class="ls-launch"><span aria-hidden="true">◉</span><span></span></button><section class="ls-panel" role="dialog" aria-modal="false" hidden><header class="ls-head"><strong></strong><button class="ls-close">×</button></header><div class="ls-controls"><label><span class="ls-language-label"></span> <select class="ls-language"><option value="en">English</option><option value="he">עברית</option></select></label><button class="ls-stop" type="button"></button></div><div class="ls-messages" aria-live="polite"></div><p class="ls-privacy"></p><form class="ls-form"><button type="button" class="ls-mic">🎙</button><input maxlength="1000" required><button class="ls-send" type="submit"></button></form></section>`;
-  document.body.append(host);
+  host.innerHTML = `<button class="ls-launch"><span aria-hidden="true">🎙</span><span></span></button><section class="ls-panel" role="dialog" aria-modal="false" hidden><header class="ls-head"><strong></strong><button class="ls-close">×</button></header><div class="ls-controls"><label><span class="ls-language-label"></span> <select class="ls-language"><option value="en">English</option><option value="he">עברית</option></select></label><button class="ls-stop" type="button"></button></div><div class="ls-messages" aria-live="polite"></div><p class="ls-privacy"></p><form class="ls-form"><button type="button" class="ls-mic">🎙</button><input maxlength="1000" required><button class="ls-send" type="submit"></button></form></section>`;
+  const placement = document.querySelector(".hero .actions") || document.querySelector(".heroBtns") || document.querySelector("main") || document.body;
+  placement.prepend(host);
   const panel = host.querySelector(".ls-panel"), launch = host.querySelector(".ls-launch"), list = host.querySelector(".ls-messages"), form = host.querySelector("form"), input = form.querySelector("input"), mic = host.querySelector(".ls-mic"), select = host.querySelector(".ls-language"), stop = host.querySelector(".ls-stop"), close = host.querySelector(".ls-close"), send = host.querySelector(".ls-send");
   const locale = () => lang === "he" ? "he-IL" : "en-US";
   function add(text, who, language = lang) {
@@ -38,9 +39,10 @@
     stop.textContent = t.stop; input.placeholder = t.placeholder; input.setAttribute("aria-label", t.placeholder);
     send.textContent = t.send; mic.setAttribute("aria-label", t.listen); host.querySelector(".ls-privacy").textContent = t.privacy;
   }
+  panel.id = "loyalty-support-dialog"; launch.setAttribute("aria-controls", panel.id); launch.setAttribute("aria-expanded", "false");
   translate(); add(t.intro, "agent");
-  launch.onclick = () => { panel.hidden = false; launch.hidden = true; input.focus(); };
-  close.onclick = () => { halt(); panel.hidden = true; launch.hidden = false; launch.focus(); };
+  launch.onclick = () => { panel.hidden = false; launch.setAttribute("aria-expanded", "true"); input.focus(); };
+  close.onclick = () => { halt(); panel.hidden = true; launch.hidden = false; launch.setAttribute("aria-expanded", "false"); launch.focus(); };
   stop.onclick = () => { halt(); input.focus(); };
   select.onchange = () => { halt(); lang = select.value === "he" ? "he" : "en"; translate(); try { localStorage.setItem("loyalty-support-language", lang); } catch {} input.focus(); };
   panel.onkeydown = event => { if (event.key === "Escape") close.click(); };
