@@ -27,3 +27,7 @@ Scope: all 12 US HTML documents in this checkout, excluding the Israel-prefixed 
 - Vercel deployment access previously returned 403. No merge or production deployment was performed.
 
 Next release gate: obtain authorized browser/deployment access, visually test desktop/mobile, verify the QR destination and real customer flows in a test environment, then complete support activation and bounded live voice tests before publishing.
+
+## Approved hero replacement
+
+Replaced the remote campaign photo and its unrelated image fallbacks with a bundled English-localized version of the approved Israel brunette/cream-sweater café photo. The same woman, pose and café composition are preserved; in-image labels say Loyalty US and use English. The QR is decorative, not a working customer registration code. File: `loyalty-approved-hero-us.png`. Asset reference, PNG signature, and Vercel static PNG configuration were checked locally; deployed rendering remains unverified.
