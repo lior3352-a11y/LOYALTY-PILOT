@@ -17,6 +17,7 @@
     { "src": "/api/billing", "dest": "/api/billing.js" },
     { "src": "/api/stripe-webhook", "dest": "/api/stripe-webhook.js" },
     { "src": "/api/supabase-proxy", "dest": "/api/supabase-proxy.js" },
+    { "src": "/api/support", "dest": "/api/support.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
