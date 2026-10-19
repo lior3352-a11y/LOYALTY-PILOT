@@ -56,6 +56,16 @@ export default async function handler(req, res) {
   const message = String(body.message || "").trim();
   if (!message || message.length > 1000) return res.status(400).json({ error: "Message must be 1-1000 characters" });
   const lang = host.includes("loyaltyapp.company") ? "he" : "en";
+  const specialist = /account|charge|billing|refund|locked|missing points|points missing|חשבון|חיוב|תשלום|החזר|נעול|נקודות חסרות|נקודות שלא/.test(message.toLowerCase());
+  const containsPrivateData = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|(?:\+?\d[\d ()-]{8,}\d)|\b\d{13,19}\b|\b(?:password|passcode|verification code|סיסמה|קוד אימות)\s*[:=]?\s*\S+/i.test(message);
+  if (containsPrivateData) {
+    return res.status(200).json({
+      answer: lang === "he"
+        ? "כדי להגן על הפרטיות, עצרתי את ההודעה לפני העברתה למערכת AI. אל תשלח אימייל, מספר טלפון, סיסמה, קוד אימות או פרטי תשלום. נסח שוב את השאלה באופן כללי."
+        : "To protect your privacy, I stopped this message before sending it to the AI service. Please don't share an email, phone number, password, verification code, or payment details. Rephrase your question without personal information.",
+      source: "privacy_filter", language: lang, specialistHandoff: false
+    });
+  }
 
   if (process.env.OPENAI_API_KEY) {
     try {
@@ -64,7 +74,11 @@ export default async function handler(req, res) {
         headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           model: process.env.LOYALTY_SUPPORT_MODEL || "gpt-4.1-mini",
-          instructions: SYSTEM[lang] + "\nVerified product facts:\n- " + KNOWLEDGE[lang].join("\n- "),
+          instructions: (specialist
+            ? (lang === "he"
+              ? "אתה סוכן AI מומחה לתקלות, חיובים ובעיות חשבון ב-Loyalty. אין לך חיבור לחשבונות או למערכות חיוב, ולכן אל תקבע עובדות אישיות ואל תטען שבדקת או ביצעת פעולה. תן צעדי פתרון כלליים בלבד מתוך העובדות המאומתות. אם נדרשת בדיקת חשבון, הסבר שהחיבור המאובטח עדיין אינו זמין והנחה את המשתמש להיכנס לאתר הרשמי. אל תבקש מידע אישי או סודי. ענה בקצרה."
+              : "You are Loyalty's specialist AI for troubleshooting, billing questions, and account issues. You have no access to accounts or billing systems: never state personal account facts or claim you checked or changed anything. Give only general steps supported by verified facts. If account access is needed, explain the secure integration is not available yet and direct the user to sign in on the official site. Do not request personal or secret information. Be concise.")
+            : SYSTEM[lang]) + "\nVerified product facts:\n- " + KNOWLEDGE[lang].join("\n- "),
           input: message,
           max_output_tokens: 220,
           store: false
@@ -73,10 +87,10 @@ export default async function handler(req, res) {
       if (!result.ok) throw new Error("Provider request failed");
       const data = await result.json();
       const answer = (data.output || []).flatMap(item => item.content || []).filter(item => item.type === "output_text").map(item => item.text).join("\n").trim();
-      if (answer) return res.status(200).json({ answer, source: "ai", language: lang, specialistHandoff: false });
+      if (answer) return res.status(200).json({ answer, source: specialist ? "ai_specialist" : "ai", language: lang, specialistHandoff: specialist });
     } catch (error) {
       console.error("Loyalty support provider error", error.message);
     }
   }
-  return res.status(200).json({ answer: reply(lang, message), source: "verified_faq", language: lang, specialistHandoff: /account|charge|refund|locked|points missing|חשבון|חיוב|החזר|נקוד.*חסר/.test(message.toLowerCase()) });
+  return res.status(200).json({ answer: reply(lang, message), source: "verified_faq", language: lang, specialistHandoff: specialist });
 }
