@@ -20,6 +20,10 @@
    body{background:#111!important;color:#f5f1e8!important} .app{background:#151515!important}
    .top{background:linear-gradient(135deg,#050505,#17130b)!important;border-bottom:1px solid #4b3b1d!important}.brand{color:#fff!important}.hello{color:#d8c28d!important}
    .card,.modal-box{background:#1d1d1d!important;color:#f5f1e8!important;box-shadow:0 8px 24px rgba(0,0,0,.28)!important}
+   .card label,.card h2,.card h3,.modal-box label{color:#fff!important}
+   .card .terms-consent,.card .check{color:#fff!important}.card .terms-consent a,.card .check a{color:#93c5fd!important}
+   .box,.rowitem,.installRow,.iosHelp{background:#252525!important;color:#fff!important;border-color:#4a4438!important}
+   .box span,.rowitem .meta,.installText span{color:#c9c4b8!important}.preview{background:#33270f!important;color:#fff!important}
    input,select,textarea,.readonly,.dash,.metric,.history-row,.customer-row,.customer-stat{background:#252525!important;color:#fff!important;border-color:#4a4438!important}
    input:focus,select:focus,textarea:focus{outline:2px solid #c9a24a!important;outline-offset:1px}
    .btn{background:#c9a24a!important;color:#111!important}.btn.secondary{background:#242424!important;color:#e5c878!important;border-color:#6a5428!important}.btn.redeem,.share-primary{background:#c9a24a!important;color:#111!important}

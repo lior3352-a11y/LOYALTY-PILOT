@@ -33,7 +33,7 @@
     <h2>How it works</h2>
     <div class="steps">
       <div class="step"><div class="num">1</div><b>Scan</b><div class="small">The customer scans the business QR code.</div></div>
-      <div class="step"><div class="num">2</div><b>Join</b><div class="small">Name and phone — the wallet is ready.</div></div>
+      <div class="step"><div class="num">2</div><b>Join</b><div class="small">Create your account and join a participating business.</div></div>
       <div class="step"><div class="num">3</div><b>Earn and return</b><div class="small">Every purchase earns points to redeem later.</div></div>
     </div>
   </section>
@@ -41,12 +41,12 @@
   <section class="section">
     <h2>What businesses get</h2>
     <div class="features">
-      <div class="feature"><b>לוח בעל עסק</b><span class="small">מכירות, נקודות, לקוחות ופעילות יומית.</span></div>
-      <div class="feature"><b>עסקה חדשה</b><span class="small">הזנת טלפון וסכום קנייה — והנקודות מחושבות אוטומטית.</span></div>
-      <div class="feature"><b>מימוש נקודות</b><span class="small">מימוש יתרה בצורה פשוטה ומבוקרת.</span></div>
-      <div class="feature"><b>לקוחות והיסטוריה</b><span class="small">מעקב אחר יתרות, קניות, צבירות ומימושים.</span></div>
-      <div class="feature"><b>QR קבוע לעסק</b><span class="small">מוכן להצבה על הדלפק, החלון או בקופה.</span></div>
-      <div class="feature"><b>ארנק אישי ללקוח</b><span class="small">הלקוח רואה את היתרה והפעילות שלו.</span></div>
+      <div class="feature"><b>Business dashboard</b><span class="small">Sales, points, customers and daily activity.</span></div>
+      <div class="feature"><b>Record purchases</b><span class="small">Identify the customer and enter a purchase to calculate points.</span></div>
+      <div class="feature"><b>Redeem rewards</b><span class="small">Review eligible rewards and approve redemption.</span></div>
+      <div class="feature"><b>Customers and history</b><span class="small">Track balances, purchases, points and redemptions.</span></div>
+      <div class="feature"><b>Your business QR</b><span class="small">Display it at the counter, in the window or at checkout.</span></div>
+      <div class="feature"><b>Customer wallet</b><span class="small">Customers can view their rewards and activity.</span></div>
     </div>
   </section>
 
@@ -54,8 +54,8 @@
     <div class="demo">
       <div>
         <h2>Try it as a real customer</h2>
-        <p>סרוק את הקוד מהטלפון. ייפתח דף ההצטרפות של LOYALTY, בדיוק כמו שלקוח יראה בבית העסק.</p>
-        <p class="small">אפשר גם ללחוץ על הכפתור ולפתוח את ההדגמה ישירות.</p>
+        <p>Scan the code with your phone to open customer registration.</p>
+        <p class="small">You can also open registration using the button below.</p>
         <div class="sharebar">
           <a class="btn primary" href="join.html">Customer sign-up</a>
           <a class="btn whatsapp" id="waDemo" target="_blank" rel="noopener">Send demo on WhatsApp</a>
@@ -63,8 +63,8 @@
       </div>
       <div class="qrbox">
         <img src="demo-qr.svg" alt="LOYALTY demo QR code">
-        <b>סרוק להדגמת לקוח</b>
-        <div class="small">LOYALTY — סורקים. מצטרפים. צוברים. חוזרים.</div>
+        <b>Scan to join Loyalty US</b>
+        <div class="small">Loyalty US — Scan. Join. Earn. Return.</div>
       </div>
     </div>
   </section>
@@ -72,19 +72,19 @@
   <section class="section pilot">
     <h2>Launch pilot for early businesses</h2>
     <div class="price">30 days</div>
-    <p><b>ללא התחייבות</b> — כולל הקמת העסק, הגדרת אחוז צבירה, QR אישי, הדרכה ותמיכה בתקופת הפיילוט.</p>
-    <p>מחיר השקה לאחר הפיילוט: <b>99 ₪ לחודש ל־3 חודשים ראשונים</b>.</p>
+    <p>Try Loyalty US free for 30 days with a business QR and configurable rewards.</p>
+    <p>After the free trial: <b>$49/month</b>.</p>
     <div class="ctaRow">
       <a class="btn primary" href="merchant.html">See how it works</a>
       <a class="btn whatsapp" id="waPilot" target="_blank" rel="noopener">Send the offer on WhatsApp</a>
     </div>
   </section>
 
-  <div class="footer"><b>LOYALTY — סורקים. מצטרפים. צוברים. חוזרים.</b></div>
+  <div class="footer"><b>Loyalty US — Scan. Join. Earn. Return.</b></div>
 </div>
 <script>
-const salesUrl='https://lior3352-a11y.github.io/LOYALTY-PILOT/sales.html';
-const demoUrl='https://lior3352-a11y.github.io/LOYALTY-PILOT/join.html';
+const salesUrl=new URL('sales.html',location.href).href;
+const demoUrl=new URL('join.html',location.href).href;
 function wa(text){return 'https://wa.me/?text='+encodeURIComponent(text)}
 document.getElementById('waTop').href=wa('See LOYALTY — digital business loyalty:\n'+salesUrl);
 document.getElementById('waDemo').href=wa('Here is the LOYALTY customer experience demo:\n'+demoUrl);

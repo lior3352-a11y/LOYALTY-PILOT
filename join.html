@@ -30,6 +30,10 @@ html{background:#fff}body{background:linear-gradient(137deg,#ffffff,#eff6ff 62%,
 .tab.active{color:#fff;background:#0567fa;border-color:#0567fa;box-shadow:0 9px 20px #0567fa27}
 .card{border:1px solid #dbe7f9;border-radius:24px;box-shadow:0 17px 45px #12375e15;background:#fff;padding:28px}
 label{font-size:15px;color:#071943;font-weight:800}
+/* Keep form labels readable on the US dark cards applied by site-common.js. */
+#signupCard label,#loginCard label{color:#fff!important}
+.subtitle{color:#d8c28d!important}.note{color:#c9c4b8!important}
+.business{background:#252525!important;color:#fff!important}.business span{color:#c9c4b8!important}
 input{background:#fbfdff;border:1.5px solid #b9cee9;color:#071943;padding:14px 15px}
 input:focus{border-color:#0567fa;box-shadow:0 0 0 4px #dbeafe;outline:none}
 .check{color:#243854;font-size:14px;line-height:1.5}
@@ -63,7 +67,7 @@ input:focus{border-color:#0567fa;box-shadow:0 0 0 4px #dbeafe;outline:none}
       <div><label for="zip">ZIP code</label><input id="zip" inputmode="numeric" autocomplete="postal-code"></div>
       <div><label for="birthDate">Date of birth</label><input id="birthDate" type="date" autocomplete="bday"></div>
     </div>
-    <label class="check"><input id="terms" type="checkbox"><span>I agree to the Terms of Service and Privacy Policy and consent to LOYALTY storing my account information for rewards and account security.</span></label>
+    <label class="check"><input id="terms" type="checkbox"><span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and consent to LOYALTY storing my account information for rewards and account security.</span></label>
     <button id="signupBtn" class="primary" onclick="registerCustomer()">Create my account</button>
     <div id="signupMsg"></div>
     <div class="security">Your password is stored as a secure password hash. Businesses do not receive your password.</div>
