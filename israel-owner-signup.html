@@ -25,4 +25,4 @@ async function registerBusiness(){
   localStorage.setItem('loyalty_merchant_access_token',data.access_token);localStorage.setItem('loyalty_merchant_email',emailValue);setMsg('החשבון נפתח. מעביר לדשבורד...',true);setTimeout(function(){location.href='israel-merchant.html'},600)
  }catch(e){setMsg(e.message||'לא הצלחנו לפתוח חשבון',false)}finally{button.disabled=false;button.textContent='פתיחת חשבון עסק'}
 }
-</script></body></html>
+</script><script src="/support-widget.js" data-language="he" defer></script></body></html>
