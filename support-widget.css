@@ -7,3 +7,11 @@
 #loyalty-support-root .ls-panel[dir=rtl] .ls-agent{margin-left:auto;margin-right:0}
 #loyalty-support-root .ls-panel[dir=rtl] .ls-user{margin-right:auto;margin-left:0}
 #loyalty-support-root button:focus-visible,#loyalty-support-root select:focus-visible,#loyalty-support-root input:focus-visible{outline:3px solid #ffb900;outline-offset:2px}
+
+/* Primary hero action and centered conversation on all screen sizes. */
+#loyalty-support-root{max-width:100%}
+#loyalty-support-root .ls-launch{position:static;inset:auto;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:56px;padding:15px 23px;border-radius:14px;font-size:18px;line-height:1.3;box-shadow:0 7px 22px #075ef530;white-space:normal}
+#loyalty-support-root .ls-launch span:first-child{margin:0;font-size:23px}
+#loyalty-support-root .ls-panel{top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 24px));height:min(600px,calc(100dvh - 32px))}
+#loyalty-support-root .ls-launch[hidden],#loyalty-support-root .ls-panel[hidden]{display:none}
+@media(max-width:600px){.hero .actions>#loyalty-support-root{width:100%}#loyalty-support-root .ls-launch{width:100%;min-height:58px}}
