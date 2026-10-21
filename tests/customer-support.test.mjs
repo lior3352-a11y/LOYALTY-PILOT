@@ -26,9 +26,19 @@ test('expired, idle or budget-denied sessions never call the model',async()=>{
   const res=response();await handler(request(turn),res);assert.equal(res.code,429);
 });
 test('a session receives a random opaque token, not a provider credential',async()=>{
-  const handler=createSupportHandler({env,getSql:()=>async()=>[],fetcher:()=>assert.fail('provider')});
+  const handler=createSupportHandler({env,getSql:()=>async()=>[{token_hash:'created'}],fetcher:()=>assert.fail('provider')});
   const res=response();await handler(request({action:'start'}),res);assert.equal(res.code,200);assert.match(res.data.token,/^[a-f0-9]{64}$/);assert.equal(res.data.maxSeconds,180);assert.equal(res.data.idleSeconds,30);
 });
+test('new sessions require available capacity and trial budget before issuing a token',async()=>{
+  let query='';
+  const handler=createSupportHandler({env,getSql:()=>async(parts)=>{query=parts.join('?');return [];},fetcher:()=>assert.fail('provider')});
+  const res=response();await handler(request({action:'start'}),res);
+  assert.equal(res.code,429);assert.equal(res.data.error,'session_or_budget_limit');
+  assert.match(query,/pg_try_advisory_xact_lock/);
+  assert.match(query,/COUNT\(\*\).*loyalty_support_sessions/);
+  assert.match(query,/reserved_cents/);
+});
+
 test('English model request is bounded and does not store the conversation',async()=>{
   const requests=[];
   const handler=createSupportHandler({env,getSql:()=>async(parts)=>parts.join('').includes('EXTRACT')?[{seconds:100}]:[{id:'ok'}],fetcher:async(url,options)=>{
