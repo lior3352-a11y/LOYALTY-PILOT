@@ -1,0 +1,42 @@
+name: Customer support safety checks
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/customer-support-checks.yml'
+      - 'lib/customer-support.mjs'
+      - 'api/support.js'
+      - 'support-widget.js'
+      - 'tests/customer-support.test.mjs'
+      - 'migrations/customer-support.sql'
+  push:
+    branches:
+      - feat/customer-voice-support
+      - feat/israel-customer-voice-support
+    paths:
+      - '.github/workflows/customer-support-checks.yml'
+      - 'lib/customer-support.mjs'
+      - 'api/support.js'
+      - 'support-widget.js'
+      - 'tests/customer-support.test.mjs'
+      - 'migrations/customer-support.sql'
+
+permissions:
+  contents: read
+
+jobs:
+  node-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out code (read-only)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate support syntax and regression tests
+        run: |
+          node --version
+          node --check api/support.js
+          node --check lib/customer-support.mjs
+          node --check support-widget.js
+          node --test tests/customer-support.test.mjs
