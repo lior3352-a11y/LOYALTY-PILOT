@@ -36,6 +36,10 @@
     {
       "src": "*.txt",
       "use": "@vercel/static"
+    },
+    {
+      "src": "*.jpg",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
