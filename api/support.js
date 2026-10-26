@@ -3,7 +3,7 @@ import { reserveSupportBudget } from '../lib/support-limits.mjs';
 const KNOWLEDGE = {
   en: [
     "Loyalty US is a QR-code loyalty program for local businesses. The public website says customers do not need an extra app or hardware.",
-    "The US business offer shown on the public site is a 30-day free trial, then $49 per month.",
+    "The US business offer shown on the public site is a 30-day free trial with no commitment, then the business chooses its monthly price.",
     "Customers can join a business loyalty program, scan its QR code, and view rewards through the Loyalty experience.",
     "Business owners can create an account and manage their loyalty program through the owner and merchant pages."
   ],
@@ -29,8 +29,8 @@ function reply(lang, text) {
     ? "בדרך כלל מצטרפים לתוכנית של העסק וסורקים את קוד ה-QR שלו כדי לצבור או לראות הטבות. אם הסריקה אינה עובדת, נסה לאפשר למצלמה גישה ולפתוח מחדש את הקישור."
     : "Join the business's loyalty program, then scan its QR code to collect or view rewards. If scanning doesn't work, check camera permission and reopen the link.";
   if (/price|cost|מחיר|עלות|49/.test(q)) return he
-    ? "האתר האמריקאי מציג 30 ימי ניסיון חינם ולאחריהם $49 לחודש לבעלי עסקים. זו הצעה לאתר האמריקאי; בדוק את האתר הישראלי לפרטי התוכנית בישראל."
-    : "The US website lists a 30-day free trial, then $49 per month for businesses. This offer is for the US site; please check the Israeli site for local plan details.";
+    ? "האתר האמריקאי מציג 30 ימי ניסיון חינם ללא התחייבות, ולאחריהם בעל העסק בוחר את המחיר החודשי. זו הצעה לאתר האמריקאי; בדוק את האתר הישראלי לפרטי התוכנית בישראל."
+    : "The US website offers a 30-day free trial with no commitment; afterward, the business chooses its monthly price. This offer is for the US site; please check the Israeli site for local plan details.";
   if (/point|reward|נקוד|הטב|הטבה/.test(q)) return he
     ? "אפשר לצבור הטבות דרך תוכנית הנאמנות של העסק ולראות אותן בחוויית Loyalty. אין לי גישה ליתרה האישית שלך; אל תשלח כאן פרטים מזהים."
     : "You can collect rewards through the business's loyalty program and view them in Loyalty. I can't access your personal balance; please don't share identifying details here.";
