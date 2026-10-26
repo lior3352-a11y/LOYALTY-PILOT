@@ -21,7 +21,7 @@ function businessId(user) {
   return Number(user.business_id);
 }
 async function ensureBilling(sql) {
-  await sql`CREATE TABLE IF NOT EXISTS loyalty_subscriptions (business_id BIGINT PRIMARY KEY REFERENCES loyalty_businesses(id) ON DELETE CASCADE, trial_start TIMESTAMPTZ NOT NULL, trial_end TIMESTAMPTZ NOT NULL, subscription_status TEXT NOT NULL CHECK (subscription_status IN ('trialing','active','past_due','canceled','expired')), subscription_start TIMESTAMPTZ, next_billing_date TIMESTAMPTZ, stripe_customer_id TEXT UNIQUE, stripe_subscription_id TEXT UNIQUE, plan_name TEXT NOT NULL DEFAULT 'Loyalty US Standard', monthly_price_cents INTEGER NOT NULL DEFAULT 4900, canceled_at TIMESTAMPTZ, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
+  await sql`CREATE TABLE IF NOT EXISTS loyalty_subscriptions (business_id BIGINT PRIMARY KEY REFERENCES loyalty_businesses(id) ON DELETE CASCADE, trial_start TIMESTAMPTZ NOT NULL, trial_end TIMESTAMPTZ NOT NULL, subscription_status TEXT NOT NULL CHECK (subscription_status IN ('trialing','active','past_due','canceled','expired')), subscription_start TIMESTAMPTZ, next_billing_date TIMESTAMPTZ, stripe_customer_id TEXT UNIQUE, stripe_subscription_id TEXT UNIQUE, plan_name TEXT NOT NULL DEFAULT 'Loyalty US Standard', monthly_price_cents INTEGER NOT NULL DEFAULT 100, canceled_at TIMESTAMPTZ, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await sql`CREATE TABLE IF NOT EXISTS loyalty_payment_history (id BIGSERIAL PRIMARY KEY, business_id BIGINT NOT NULL REFERENCES loyalty_businesses(id) ON DELETE CASCADE, stripe_invoice_id TEXT UNIQUE NOT NULL, amount_paid_cents INTEGER NOT NULL DEFAULT 0, status TEXT NOT NULL, paid_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
   await sql`CREATE INDEX IF NOT EXISTS loyalty_payment_history_business_idx ON loyalty_payment_history(business_id, created_at DESC)`;
 }
@@ -42,12 +42,14 @@ export default async function handler(req, res) {
       return res.json({ subscription, payments });
     }
     if (action === 'create_subscription') {
+      const monthlyPriceCents = Math.round(Number(p.monthly_price) * 100);
+      if (!Number.isInteger(monthlyPriceCents) || monthlyPriceCents < 100 || monthlyPriceCents > 50000) return res.status(400).json({ error: 'Choose a monthly price between $1 and $500' });
       const business = (await sql`SELECT id,name FROM loyalty_businesses WHERE id=${id}`).at(0);
       const subscription = await createTrial(sql, id);
       const client = stripe();
       const customer = subscription.stripe_customer_id ? await client.customers.retrieve(subscription.stripe_customer_id) : await client.customers.create({ name: business.name, metadata: { business_id: String(id) } });
-      const created = await client.subscriptions.create({ customer: customer.id, items: [{ price_data: { currency: 'usd', product_data: { name: 'Loyalty US Standard' }, unit_amount: 4900, recurring: { interval: 'month' } } }], trial_period_days: Math.max(0, Math.ceil((new Date(subscription.trial_end).getTime()-Date.now())/86400000)), metadata: { business_id: String(id) } });
-      const saved = (await sql`UPDATE loyalty_subscriptions SET stripe_customer_id=${customer.id},stripe_subscription_id=${created.id},subscription_status=${created.status === 'trialing' ? 'trialing' : 'active'},subscription_start=COALESCE(subscription_start,NOW()),next_billing_date=TO_TIMESTAMP(${created.trial_end || created.current_period_end}),updated_at=NOW() WHERE business_id=${id} RETURNING *`).at(0);
+      const created = await client.subscriptions.create({ customer: customer.id, items: [{ price_data: { currency: 'usd', product_data: { name: 'Loyalty US Standard' }, unit_amount: monthlyPriceCents, recurring: { interval: 'month' } } }], trial_period_days: Math.max(0, Math.ceil((new Date(subscription.trial_end).getTime()-Date.now())/86400000)), metadata: { business_id: String(id) } });
+      const saved = (await sql`UPDATE loyalty_subscriptions SET monthly_price_cents=${monthlyPriceCents},stripe_customer_id=${customer.id},stripe_subscription_id=${created.id},subscription_status=${created.status === 'trialing' ? 'trialing' : 'active'},subscription_start=COALESCE(subscription_start,NOW()),next_billing_date=TO_TIMESTAMP(${created.trial_end || created.current_period_end}),updated_at=NOW() WHERE business_id=${id} RETURNING *`).at(0);
       return res.json({ subscription: saved });
     }
     if (action === 'cancel_subscription') {
