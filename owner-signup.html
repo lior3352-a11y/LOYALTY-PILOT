@@ -31,33 +31,40 @@ input:focus{border-color:#0567fa;outline:3px solid #dbeafe;outline-offset:1px}
 .btn:hover{filter:brightness(.96)}
 .terms-consent{line-height:1.5;color:#243854}.terms-consent a{color:#034cbd;text-decoration:underline}
 .status{line-height:1.5}
+.price-choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 4px}.price-choice{position:relative}.price-choice input{position:absolute;opacity:0;pointer-events:none}.price-choice span{display:block;border:2px solid #c9d9ef;border-radius:14px;padding:13px 8px;text-align:center;background:#fbfdff;color:#071943;font-size:19px;font-weight:900;cursor:pointer}.price-choice small{display:block;margin-top:3px;color:#667085;font-size:11px;font-weight:700}.price-choice input:checked+span{border-color:#0567fa;background:#eaf3ff;box-shadow:0 0 0 3px #dbeafe}
 @media(max-width:600px){.app{padding:0 12px 30px}.top{padding:25px 20px 26px}.content{padding:16px 0}.card{padding:24px 18px}.trial-strip{font-size:14px}.page-subtitle{font-size:15px}}
+@media(max-width:520px){.price-choices{grid-template-columns:1fr}}
 
 </style>
 <link rel="stylesheet" href="accessibility.css">
 </head>
 <body>
-<div class="app"><div class="top"><div class="brand">🎁 LOYALTY <span class="brand-us">US</span></div><div class="hello">YOUR CUSTOMERS. YOUR REWARDS. YOUR GROWTH.</div><h1 class="page-headline">Bring your customers back.</h1><p class="page-subtitle">Create your business loyalty program in minutes. No extra hardware or app download.</p></div><div class="content"><div class="card"><div class="trial-strip">✦ 30 DAYS FREE <span>No charge during your trial</span></div>
-<h2>Join LOYALTY</h2><div class="small">Create your business account and start a 30-day free trial. Standard plan: $49/month after the trial.</div>
+<div class="app"><div class="top"><div class="brand">🎁 LOYALTY <span class="brand-us">US</span></div><div class="hello">YOUR CUSTOMERS. YOUR REWARDS. YOUR GROWTH.</div><h1 class="page-headline">See how many customers you can bring back.</h1><p class="page-subtitle">Create your first reward in minutes. No app, no extra hardware, no credit card and no commitment.</p></div><div class="content"><div class="card"><div class="trial-strip">✦ 30 DAYS FREE <span>No credit card · No commitment</span></div>
+<h2>Create your free reward</h2><div class="small">Try Loyalty US free for 30 days. If it works for your business, choose what it is worth to you.</div>
 <label for="businessName">Business name</label><input id="businessName" autocomplete="organization" placeholder="Your business name">
 <div class="row"><div><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com"></div><div><label for="phone">Phone</label><input id="phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567"></div></div>
 <label for="password">Password</label><input id="password" type="password" autocomplete="new-password" placeholder="At least 8 characters">
 <label for="confirmPassword">Confirm password</label><input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Enter your password again">
+<label>Choose your monthly price after the free trial</label><div class="price-choices" role="radiogroup" aria-label="Monthly price after the free trial">
+<label class="price-choice"><input type="radio" name="monthlyPrice" value="1900"><span>$19<small>Starter</small></span></label>
+<label class="price-choice"><input type="radio" name="monthlyPrice" value="2900" checked><span>$29<small>Most popular</small></span></label>
+<label class="price-choice"><input type="radio" name="monthlyPrice" value="4900"><span>$49<small>Supporter</small></span></label></div>
+<div class="small">Nothing is charged automatically. You will review and accept billing terms separately before any paid subscription begins.</div>
 <label class="terms-consent"><input id="acceptTerms" type="checkbox"> <span>I have read and agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
-<button id="signupBtn" class="btn" onclick="signup()">Start 30-day free trial</button>
+<button id="signupBtn" class="btn" onclick="signup()">Create My Free Reward</button>
 <button class="btn secondary" onclick="location.href='merchant.html'">Already have an account? Sign in</button><div id="result"></div>
 </div></div></div>
 <script>
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function signup(){
- const name=businessName.value.trim(),emailValue=email.value.trim(),phoneValue=phone.value.trim(),passwordValue=password.value,confirmValue=confirmPassword.value;
+ const name=businessName.value.trim(),emailValue=email.value.trim(),phoneValue=phone.value.trim(),passwordValue=password.value,confirmValue=confirmPassword.value,monthlyPrice=Number(document.querySelector('input[name="monthlyPrice"]:checked')?.value||0);
  if(!name||!emailValue||!passwordValue){result.innerHTML='<div class="status warn">Please enter the business name, email and password.</div>';return}
  if(passwordValue.length<8){result.innerHTML='<div class="status warn">Password must be at least 8 characters.</div>';return}
  if(passwordValue!==confirmValue){result.innerHTML='<div class="status warn">Passwords do not match.</div>';return}
  if(!acceptTerms.checked){result.innerHTML='<div class="status warn">Please accept the Terms of Service and Privacy Policy.</div>';return}
  signupBtn.disabled=true;signupBtn.textContent='Creating account…';
  try{
-  const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register_business',name,email:emailValue,password:passwordValue,phone:phoneValue,terms_accepted:true})});
+  const r=await fetch('/api/neon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register_business',name,email:emailValue,password:passwordValue,phone:phoneValue,monthly_price_cents:monthlyPrice,terms_accepted:true})});
   const data=await r.json().catch(()=>({}));
   if(!r.ok)throw new Error(data.error||data.message||'The business account could not be created');
   if(data.access_token)localStorage.setItem('loyalty_merchant_access_token',data.access_token);
@@ -65,7 +72,7 @@ async function signup(){
   result.innerHTML='<div class="status ok"><b>Your account was created successfully.</b><br>Opening your dashboard…</div>';
   setTimeout(()=>location.href='merchant.html',700);
  }catch(e){result.innerHTML='<div class="status warn"><b>Account creation failed.</b><br>'+esc(e.message)+'</div>'}
- finally{signupBtn.disabled=false;signupBtn.textContent='Start 30-day free trial'}
+ finally{signupBtn.disabled=false;signupBtn.textContent='Create My Free Reward'}
 }
 </script>
 <script src="site-common.js"></script>

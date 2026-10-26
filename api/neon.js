@@ -173,12 +173,14 @@ export default async function handler(req, res) {
     }
     if (action === 'register_business') {
       const name = String(p.name || '').trim(), email = String(p.email || '').trim().toLowerCase(), password = String(p.password || ''), phone = String(p.phone || '').trim();
+      const monthlyPriceCents = Number(p.monthly_price_cents);
       if (!name || !email || password.length < 8) return res.status(400).json({ error: 'Business name, email, and an 8 character password are required' });
+      if (![1900,2900,4900].includes(monthlyPriceCents)) return res.status(400).json({ error: 'Please choose a valid monthly price' });
       if (p.terms_accepted !== true) return res.status(400).json({ error: 'Terms of Service acceptance is required' });
       if ((await db`SELECT 1 FROM loyalty_users WHERE email=${email}`).length) return res.status(409).json({ error: 'An account with this email already exists' });
       const business = (await db`INSERT INTO loyalty_businesses(name,phone,qr_token) VALUES(${name},${phone || null},${randomUUID()}) RETURNING id,name,phone,loyalty_rate,qr_token`).at(0);
-      await db`INSERT INTO loyalty_business_settings(business_id) VALUES(${business.id})`;
-      await db`INSERT INTO loyalty_subscriptions(business_id,trial_start,trial_end,subscription_status) VALUES(${business.id},NOW(),NOW()+INTERVAL '30 days','trialing')`;
+      await db`INSERT INTO loyalty_business_settings(business_id,settings) VALUES(${business.id},${JSON.stringify({pricing_choice:{monthly_price_cents:monthlyPriceCents,selected_at:new Date().toISOString()}})}::jsonb)`;
+      await db`INSERT INTO loyalty_subscriptions(business_id,trial_start,trial_end,subscription_status,plan_name,monthly_price_cents) VALUES(${business.id},NOW(),NOW()+INTERVAL '30 days','trialing','Loyalty US Choose Your Price',${monthlyPriceCents})`;
       const user = (await db`INSERT INTO loyalty_users(email,password_hash,role,business_id,terms_accepted_at,terms_version) VALUES(${email},${hashPassword(password)},'owner',${business.id},NOW(),'2026-09-17') RETURNING id,email,role,business_id,terms_accepted_at,terms_version`).at(0);
       const token = randomUUID(); await db`INSERT INTO loyalty_sessions(token,user_id,expires_at) VALUES(${token},${user.id},NOW()+INTERVAL '30 days')`;
       return res.status(201).json({ token, access_token: token, user, business });

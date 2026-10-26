@@ -46,7 +46,7 @@ export default async function handler(req, res) {
       const subscription = await createTrial(sql, id);
       const client = stripe();
       const customer = subscription.stripe_customer_id ? await client.customers.retrieve(subscription.stripe_customer_id) : await client.customers.create({ name: business.name, metadata: { business_id: String(id) } });
-      const created = await client.subscriptions.create({ customer: customer.id, items: [{ price_data: { currency: 'usd', product_data: { name: 'Loyalty US Standard' }, unit_amount: 4900, recurring: { interval: 'month' } } }], trial_period_days: Math.max(0, Math.ceil((new Date(subscription.trial_end).getTime()-Date.now())/86400000)), metadata: { business_id: String(id) } });
+      const created = await client.subscriptions.create({ customer: customer.id, items: [{ price_data: { currency: 'usd', product_data: { name: subscription.plan_name || 'Loyalty US' }, unit_amount: subscription.monthly_price_cents, recurring: { interval: 'month' } } }], trial_period_days: Math.max(0, Math.ceil((new Date(subscription.trial_end).getTime()-Date.now())/86400000)), metadata: { business_id: String(id), monthly_price_cents: String(subscription.monthly_price_cents) } });
       const saved = (await sql`UPDATE loyalty_subscriptions SET stripe_customer_id=${customer.id},stripe_subscription_id=${created.id},subscription_status=${created.status === 'trialing' ? 'trialing' : 'active'},subscription_start=COALESCE(subscription_start,NOW()),next_billing_date=TO_TIMESTAMP(${created.trial_end || created.current_period_end}),updated_at=NOW() WHERE business_id=${id} RETURNING *`).at(0);
       return res.json({ subscription: saved });
     }
