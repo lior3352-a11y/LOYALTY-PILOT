@@ -21,10 +21,10 @@ test('explicit language is respected on both sites and pricing stays with the si
   const h = harness();
   const israel = await h.request({message:'How does QR work?',lang:'en'}, {host:'loyaltyapp.company',origin:'https://loyaltyapp.company'});
   assert.equal(israel.data.language,'en'); assert.match(h.calls[0].instructions,/Site: Loyalty Israel\. Reply only in English/);
-  assert.ok(!h.calls[0].instructions.includes('$49 per month'));
+  assert.ok(!h.calls[0].instructions.includes('$19, $29, or $49'));
   const us = await h.request({message:'איך סורקים QR?',lang:'he'});
   assert.equal(us.data.language,'he'); assert.match(h.calls[1].instructions,/Site: Loyalty US\. Reply only in Hebrew/);
-  assert.ok(h.calls[1].instructions.includes('$49 per month'));
+  assert.ok(h.calls[1].instructions.includes('$19, $29, or $49'));
   assert.equal(h.calls[1].max_output_tokens,220); assert.equal(h.calls[1].store,false);
 });
 test('branch alias is allowed explicitly; foreign origins/hosts and malformed origins denied', async () => {
